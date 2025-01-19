@@ -1,0 +1,16 @@
+services:
+  
+  database:
+    image: mongo
+    container_name: sigma-contacts-database
+    restart: always
+    volumes:
+      - ./backend/db-data:/data/db
+    ports:
+      - 8081:8081
+      - 27017:27017
+    networks:
+      - sigma-contacts-net
+
+networks:
+  sigma-contacts-net:
