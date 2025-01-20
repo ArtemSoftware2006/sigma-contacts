@@ -8,9 +8,12 @@ import (
 	"sigma-contacts/internal/service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func Run() {
+	Init()
+
 	router := gin.Default()
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -41,4 +44,11 @@ func Run() {
 		})
 	})
 	router.Run()
+}
+
+func Init() {
+	// loads values from .env into the system
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
+	}
 }

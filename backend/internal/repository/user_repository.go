@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sigma-contacts/internal/config"
 	dto_request "sigma-contacts/internal/domain/dto/request"
 	dto_response "sigma-contacts/internal/domain/dto/response"
 	"time"
@@ -12,10 +13,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type UserRepository struct{}
+type UserRepository struct {
+	config config.AppConfig
+}
 
 func NewUserRepository() *UserRepository {
-	return &UserRepository{}
+	return &UserRepository{
+		config: *config.GetAppConfig(),
+	}
 }
 
 func (ur *UserRepository) Create(user dto_request.UserCreateRequest) (*dto_response.UserCreateResponse, error) {
@@ -24,7 +29,11 @@ func (ur *UserRepository) Create(user dto_request.UserCreateRequest) (*dto_respo
 	defer cancel()
 
 	// TODO: ввести в конфиг подключение к MongoDB
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err := mongo.Connect(
+		ctx,
+		options.Client().ApplyURI(fmt.Sprintf("%s:%s", ur.config.DatabaseHost, ur.config.DatabasePort)),
+	)
+
 	if err != nil {
 		log.Println("Ошибка подключения к MongoDB:", err)
 		return nil, err
@@ -36,7 +45,7 @@ func (ur *UserRepository) Create(user dto_request.UserCreateRequest) (*dto_respo
 	}()
 
 	// TODO: ввести в конфиг выбор базы данных и коллекцию
-	collection := client.Database("sigma-contacts").Collection("users")
+	collection := client.Database(ur.config.DatabaseName).Collection("users")
 
 	// Пример вставки документа
 	result, err := collection.InsertOne(ctx, user)
