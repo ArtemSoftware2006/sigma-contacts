@@ -6,6 +6,6 @@ import (
 )
 
 type UserRepository interface {
-	Create(dto_request.UserCreateRequest) (*dto_response.UserCreateResponse, error)
-	// GetBaseAuth(dto_request.UserGetBaseAuthRequest) (*dto_response.UserGetBaseAuthResponse, error)
+	Create(*dto_request.UserCreateRequest) (*dto_response.UserCreateResponse, error)
+	Get(*dto_request.UserGetRequest) (*dto_response.UserGet, error)
 }

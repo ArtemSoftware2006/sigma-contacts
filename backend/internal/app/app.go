@@ -1,54 +1,73 @@
 package app
 
 import (
-	"log"
-	"net/http"
-	dto_request "sigma-contacts/internal/domain/dto/request"
+	"context"
+	"sigma-contacts/internal/api/controller"
+	router "sigma-contacts/internal/api/route"
+	"sigma-contacts/internal/config"
+	repository_interface "sigma-contacts/internal/domain/interface/repository"
+	service_interface "sigma-contacts/internal/domain/interface/service"
 	"sigma-contacts/internal/repository"
 	"sigma-contacts/internal/service"
+	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func Run() {
-	Init()
+	err := LoadEnv()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	router := gin.Default()
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	router.POST("/users", func(context *gin.Context) {
-		var request dto_request.UserCreateRequest
-
-		if err := context.ShouldBindJSON(&request); err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+	client, err := DbConnect()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() {
+		if err := client.Disconnect(context.Background()); err != nil {
+			log.Fatal("Ошибка закрытия соединения:", err)
 		}
+	}()
 
-		UserRepository := repository.NewUserRepository()
-		UserService := service.NewUserService(UserRepository)
+	config := *config.GetAppConfig()
 
-		_, err := UserService.Create(request)
+	var userRepo repository_interface.UserRepository = repository.NewUserRepository(client, config.DatabaseName, 10)
+	var UserService service_interface.UserService = service.NewUserService(userRepo)
 
-		if err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			log.Println("UserController Error: ", err)
-			return
-		}
+	var UserController *controller.UserController = controller.NewUserController(&UserService)
+	var UtilsController *controller.UtilsController = controller.NewUtilsController()
 
-		context.JSON(http.StatusOK, gin.H{
-			"message": "Пользовательуспешно создан!",
-		})
-	})
-	router.Run()
+	var router = router.NewRouter(UserController, UtilsController)
+
+	routesEngine := router.InitRoutes()
+
+	routesEngine.Run()
 }
 
-func Init() {
+func DbConnect() (*mongo.Client, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// 1. Создаём одно подключение
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		log.Fatal("Ошибка подключения к MongoDB:", err)
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func LoadEnv() error {
 	// loads values from .env into the system
 	if err := godotenv.Load(); err != nil {
-		log.Print("No .env file found")
+		log.Warn("No .env file found")
+		return err
 	}
+
+	return nil
 }

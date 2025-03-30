@@ -17,8 +17,18 @@ func NewUserService(userRepository repository_interface.UserRepository) *UserSer
 	}
 }
 
-func (us *UserService) Create(user dto_request.UserCreateRequest) (*dto_response.UserCreateResponse, error) {
+func (us *UserService) Create(user *dto_request.UserCreateRequest) (*dto_response.UserCreateResponse, error) {
 	resp, err := us.UserRepository.Create(user)
+	if err != nil {
+		log.Println("UserService Error: ", err)
+		return nil, err
+	}
+
+	return resp, err
+}
+
+func (us *UserService) Get(user *dto_request.UserGetRequest) (*dto_response.UserGet, error) {
+	resp, err := us.UserRepository.Get(user)
 	if err != nil {
 		log.Println("UserService Error: ", err)
 		return nil, err
