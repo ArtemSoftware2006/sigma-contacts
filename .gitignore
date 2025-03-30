@@ -1,1 +1,5 @@
 **/db-data
+**/node_modules
+**/.next
+**/build
+**/dump

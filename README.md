@@ -8,7 +8,11 @@ The decision was made to use the Go + Gin Framework
 
 ### Frontend
 
-The decisiob was made to use the React Framework + [Sigma.js](https://github.com/jacomyal/sigma.js)
+The decision was made to use the React Framework + [Sigma.js](https://github.com/jacomyal/sigma.js)
+
+#### CSS Framework
+
+The decision was made ti use the [Chakra-UI](https://www.chakra-ui.com/)
 
 ### Data Store 
 
