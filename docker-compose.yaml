@@ -1,5 +1,18 @@
 services:
   
+  api:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    env_file: ./backend/.env 
+    depends_on:
+      - database
+    restart: unless-stopped
+    networks:
+      - sigma-contacts-net
+
   database:
     image: mongo
     container_name: sigma-contacts-database
