@@ -8,8 +8,13 @@ type DataBaseConfig struct {
 	DatabaseName string
 }
 
+type JwtConfig struct {
+	JwtSecret string
+}
+
 type AppConfig struct {
 	DataBaseConfig
+	JwtConfig
 }
 
 func GetAppConfig() *AppConfig {
@@ -18,6 +23,9 @@ func GetAppConfig() *AppConfig {
 			DatabaseHost: getEnv("DB_HOST", "mongodb://localhost"),
 			DatabasePort: getEnv("DB_PORT", "27017"),
 			DatabaseName: getEnv("DATABASE_NAME", "sigma-contacts"),
+		},
+		JwtConfig: JwtConfig{
+			JwtSecret: getEnv("JWT_SECRET", "secret"),
 		},
 	}
 }

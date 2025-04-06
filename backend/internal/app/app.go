@@ -23,7 +23,9 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	client, err := DbConnect()
+	config := *config.GetAppConfig()
+
+	client, err := DbConnect(config.DataBaseConfig.DatabaseHost)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,27 +35,28 @@ func Run() {
 		}
 	}()
 
-	config := *config.GetAppConfig()
-
 	var userRepo repository_interface.UserRepository = repository.NewUserRepository(client, config.DatabaseName, 10)
 	var UserService service_interface.UserService = service.NewUserService(userRepo)
 
 	var UserController *controller.UserController = controller.NewUserController(&UserService)
 	var UtilsController *controller.UtilsController = controller.NewUtilsController()
 
-	var router = router.NewRouter(UserController, UtilsController)
+	var AuthService service.AuthService = *service.NewAuthService(userRepo, &config)
+	var AuthController *controller.AuthController = controller.NewAuthController(&AuthService)
+
+	var router = router.NewRouter(UserController, UtilsController, AuthController, &config)
 
 	routesEngine := router.InitRoutes()
 
 	routesEngine.Run()
 }
 
-func DbConnect() (*mongo.Client, error) {
+func DbConnect(mongoUrl string) (*mongo.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	// 1. Создаём одно подключение
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoUrl))
 	if err != nil {
 		log.Fatal("Ошибка подключения к MongoDB:", err)
 		return nil, err

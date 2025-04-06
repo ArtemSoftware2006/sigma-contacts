@@ -1,6 +1,6 @@
 package dto_request
 
-type UserGetBaseAuthRequest struct {
+type AuthRequest struct {
 	Nickname string `json:"nickname"`
 	Password string `json:"password"`
 }

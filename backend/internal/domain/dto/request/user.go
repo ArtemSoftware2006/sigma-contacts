@@ -6,3 +6,11 @@ type UserCreateRequest struct {
 	Nickname string `json:"nickname" bson:"nickname"`
 	Password string `json:"password" bson:"password"`
 }
+
+type UserGetRequest struct {
+	Id string `json:"_id"`
+}
+
+type UserFindByNickRequest struct {
+	Nickname string `json:"nickname"`
+}

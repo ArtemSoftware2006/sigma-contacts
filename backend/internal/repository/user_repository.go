@@ -43,7 +43,7 @@ func (ur *UserRepository) Create(user *dto_request.UserCreateRequest) (*dto_resp
 	return &dto_response.UserCreateResponse{}, nil
 }
 
-func (ur *UserRepository) Get(user *dto_request.UserGetRequest) (*dto_response.UserGet, error) {
+func (ur *UserRepository) Get(user *dto_request.UserGetRequest) (*dto_response.UserGetResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), ur.dbTimeout)
 	defer cancel()
 
@@ -55,7 +55,7 @@ func (ur *UserRepository) Get(user *dto_request.UserGetRequest) (*dto_response.U
 
 	collection := ur.db.Collection("users")
 
-	var response dto_response.UserGet
+	var response dto_response.UserGetResponse
 	err = collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&response)
 
 	if err != nil {
@@ -68,4 +68,35 @@ func (ur *UserRepository) Get(user *dto_request.UserGetRequest) (*dto_response.U
 	}
 
 	return &response, nil
+}
+
+func (ur *UserRepository) FindByNickname(nickname string) (*dto_response.UserGetResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), ur.dbTimeout)
+	defer cancel()
+
+	collection := ur.db.Collection("users")
+
+	var response dto_response.UserGetResponse
+	err := collection.FindOne(ctx, bson.M{"nickname": nickname}).Decode(&response)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			log.Warn("Документ не найден. ", err)
+			return nil, err
+		}
+		log.Error("Ошибка поиска документа. ", err)
+		return nil, err
+	}
+
+	return &response, nil
+}
+
+func (ur *UserRepository) ExistsByNickname(nickname string) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), ur.dbTimeout)
+	defer cancel()
+
+	collection := ur.db.Collection("users")
+
+	count, err := collection.CountDocuments(ctx, bson.M{"nickname": nickname})
+	return count > 0, err
 }
