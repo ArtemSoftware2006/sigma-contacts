@@ -5,6 +5,7 @@ import (
 	"sigma-contacts/internal/api/middleware"
 	"sigma-contacts/internal/config"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,6 +28,14 @@ func NewRouter(userController *controller.UserController, utilsController *contr
 
 func (r *Router) InitRoutes() *gin.Engine {
 	router := gin.New()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 
 	api := router.Group("/api")
 	utils := api.Group("/utils")
