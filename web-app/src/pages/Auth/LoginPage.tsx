@@ -23,7 +23,7 @@ import {
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { login, error, loading } = useAuth();
@@ -39,7 +39,8 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password);
+    console.log(nickname, password);
+    login(nickname, password);
   };
 
   return (
@@ -100,23 +101,23 @@ const LoginPage: React.FC = () => {
           <form onSubmit={handleSubmit}>
             <FormControl isInvalid={!!error}>
               <FormLabel 
-                htmlFor="email" 
+                htmlFor="nickname" 
                 fontSize="sm" 
                 color={textColor}
                 fontWeight="medium"
                 mb={2}
               >
-                Email Address
+                Nickname
               </FormLabel>
               <Input
-                id="email"
-                type="email"
+                id="nickname"
+                type="text"
                 boxSizing='border-box'
-                placeholder="your@email.com"
+                placeholder="blalum123"
                 padding={'0px'}
                 paddingLeft={'2px'}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
                 minWidth={minWidth}
                 bg={inputBg}
                 focusBorderColor={`${primaryColor}.500`}

@@ -24,7 +24,7 @@ import {
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 const RegisterPage: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -53,7 +53,7 @@ const RegisterPage: React.FC = () => {
       });
       return;
     }
-    register(email, password);
+    register(nickname, password);
   };
 
   return (
@@ -114,23 +114,23 @@ const RegisterPage: React.FC = () => {
           <form onSubmit={handleSubmit}>
             <FormControl isInvalid={!!error}>
               <FormLabel 
-                htmlFor="email" 
+                htmlFor="nickname" 
                 fontSize="sm" 
                 color={textColor}
                 fontWeight="medium"
                 mb={2}
               >
-                Email Address
+                Nickname
               </FormLabel>
               <Input
-                id="email"
-                type="email"
+                id="nickname"
+                type="text"
                 boxSizing='border-box'
-                placeholder="your@email.com"
+                placeholder="blulum_123"
                 padding={'0px'}
                 paddingLeft={'2px'}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
                 minWidth={minWidth}
                 bg={inputBg}
                 focusBorderColor={`${primaryColor}.500`}

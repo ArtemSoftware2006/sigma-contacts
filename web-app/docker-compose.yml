@@ -1,0 +1,20 @@
+services: 
+
+  web-app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - 3000:3000
+    extra_hosts:
+      - api:host-gateway
+    volumes: 
+      - ./src/:/app/src/
+    networks:
+      - sigma-contacts-net
+
+
+networks:
+  sigma-contacts-net:
+    external: true
+    name: sigma-contacts-net

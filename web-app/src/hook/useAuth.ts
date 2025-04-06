@@ -7,10 +7,10 @@ export const useAuth = () : any => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const login = async (email: string, password: string) => {
+  const login = async (nickname: string, password: string) => {
     try {
       setLoading(true);
-      const { token, user } = await AuthService.login({ email, password });
+      const { token, user } = await AuthService.login({ nickname, password });
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       navigate('/');
@@ -22,10 +22,10 @@ export const useAuth = () : any => {
     }
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (nickname: string, password: string) => {
     try {
       setLoading(true);
-      const { token, user } = await AuthService.register({ email, password });
+      const { token, user } = await AuthService.register({ nickname, password });
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       navigate('/');

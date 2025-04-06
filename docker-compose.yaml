@@ -27,3 +27,5 @@ services:
 
 networks:
   sigma-contacts-net:
+    external: false
+    name: sigma-contacts-net

@@ -4,7 +4,7 @@ import axios, { AxiosError } from 'axios';
 const API_URL = 'http://localhost:8080/api/auth';
 
 interface User {
-  email: string;
+  nickname: string;
   password: string;
 }
 
@@ -25,9 +25,12 @@ interface ApiError {
 export const AuthService = {
   async login(user: User): Promise<AuthResponse> {
     try {
+        console.log("AuthService: ", user)
         const response = await axios.post<AuthResponse>(`${API_URL}/login`, user);
+        console.log(response)
         return response.data;
       } catch (error) {
+        console.error(error)
         const axiosError = error as AxiosError<ApiError>;
         throw new Error(axiosError.response?.data?.message || 'Login failed');
       }
