@@ -13,8 +13,7 @@ const SigmaContainer: React.FC<SigmaContainerProps> = ({
   const sigmaInstance = useRef<Sigma | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-
+    if (!containerRef.current) return;  
     // Инициализация sigma
     sigmaInstance.current = new Sigma(graph, containerRef.current, {
       renderEdgeLabels: settings.renderEdgeLabels,
@@ -47,6 +46,7 @@ const SigmaContainer: React.FC<SigmaContainerProps> = ({
       ref={containerRef}
       className={`sigma-container ${className}`}
       style={style}
+      onContextMenu={(e) => e.preventDefault()} 
     />
   );
 };

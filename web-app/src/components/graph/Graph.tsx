@@ -5,19 +5,29 @@ import SigmaContainer from '../sigmaContainer/SigmaContainer';
 import { GraphService } from '../../service/graphService';
 import './Graph.css';
 
-const GraphComponent: React.FC = () => {
+interface GraphComponentProps {
+  onNodeClick?: (nodeData: { label: string; size: number }) => void;
+  onNodeRightClick?: () => void;
+}
+
+const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick }) => {
   const [graph, setGraph] = useState<Graph | null>(null);
+  const [initialAnimationDone, setInitialAnimationDone] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const apiData = await GraphService.fetchGraphDataMock();
+
+        const apiData = await GraphService.fetchGraphData();
         const processedData = await GraphService.processGraph(apiData);
+
+        console.log(processedData)
         
         const newGraph = new Graph();
-        
+        newGraph.clear();
+
         // Добавляем узлы
         processedData.nodes.forEach(node => {
           newGraph.addNode(node.id, {
@@ -51,13 +61,33 @@ const GraphComponent: React.FC = () => {
   }, []);
 
   const handleSigmaLoad = (sigma: Sigma) => {
-    sigma.getCamera().animate({
-      x: 0.5,
-      y: 0.5,
-      angle: 0,
-      ratio: 1.5
-    }, {
-      duration: 1000
+    if (!initialAnimationDone) {
+      sigma.getCamera().animate({
+        x: 0.5,
+        y: 0.5,
+        angle: 0,
+        ratio: 1.5, 
+      }, {
+        duration: 1000,
+      }, 
+      () => setInitialAnimationDone(true));
+    }
+
+    sigma.on("clickNode", ({ node }) => {
+      const nodeAttributes = sigma.getGraph().getNodeAttributes(node);
+      console.log("Клик по узлу:", node, nodeAttributes);
+
+      if (onNodeClick) {
+        onNodeClick({
+          label: nodeAttributes.label,
+          size: nodeAttributes.size,
+        });
+      }
+    });
+
+    sigma.on("rightClickNode", ({ node }) => {
+      const nodeAttributes = sigma.getGraph().getNodeAttributes(node);
+      console.log("Правая кнопка по узлу:", node, nodeAttributes);
     });
   };
 

@@ -3,22 +3,8 @@ import styled from 'styled-components';
 export const MainWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
-`;
-
-export const Header = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #282c34;
-  color: white;
-  padding: 10px 20px;
-`;
-
-export const Footer = styled.footer`
-  background-color: #f1f1f1;
-  padding: 10px 20px;
-  text-align: center;
+  height: 90vh;
+  position: relative; /* для позиционирования кнопки */
 `;
 
 export const Content = styled.main`
@@ -41,22 +27,9 @@ export const SettingsMenu = styled.div`
   padding: 20px;
 `;
 
-export const Logo = styled.div`
-  font-size: 1.5em;
-  font-weight: bold;
-`;
-
-export const Profile = styled.div`
-  font-size: 1em;
-`;
-
-export const MenuLink = styled.a`
-  color: white;
-  text-decoration: none;
-  font-size: 1em;
-  margin: 0 10px;
-
-  &:hover {
-    text-decoration: underline;
-  }
+export const ToggleButtonWrapper = styled.div`
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
 `;
