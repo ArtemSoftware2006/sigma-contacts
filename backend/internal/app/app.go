@@ -44,7 +44,12 @@ func Run() {
 	var AuthService service.AuthService = *service.NewAuthService(userRepo, &config)
 	var AuthController *controller.AuthController = controller.NewAuthController(&AuthService)
 
-	var router = router.NewRouter(UserController, UtilsController, AuthController, &config)
+	var GraphRepository repository.GraphRepository = *repository.NewGraphRepository(client, config.DatabaseName, 10)
+	var GraphService *service.GraphService = service.NewGraphService(&GraphRepository)
+
+	var GraphController *controller.GraphController = controller.NewGraphController(GraphService)
+
+	var router = router.NewRouter(UserController, UtilsController, AuthController, GraphController, &config)
 
 	routesEngine := router.InitRoutes()
 

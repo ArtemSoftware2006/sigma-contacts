@@ -13,15 +13,18 @@ type Router struct {
 	UserController  *controller.UserController
 	UtilsController *controller.UtilsController
 	AuthController  *controller.AuthController
+	GraphController *controller.GraphController
 	AppConfig       *config.AppConfig
 }
 
 func NewRouter(userController *controller.UserController, utilsController *controller.UtilsController,
-	AuthController *controller.AuthController, AppConfig *config.AppConfig) *Router {
+	AuthController *controller.AuthController, GraphController *controller.GraphController,
+	AppConfig *config.AppConfig) *Router {
 	return &Router{
 		UserController:  userController,
 		UtilsController: utilsController,
 		AuthController:  AuthController,
+		GraphController: GraphController,
 		AppConfig:       AppConfig,
 	}
 }
@@ -51,6 +54,12 @@ func (r *Router) InitRoutes() *gin.Engine {
 	auth := api.Group("/auth")
 	auth.POST("/register", r.AuthController.Register)
 	auth.POST("/login", r.AuthController.Login)
+
+	graph := api.Group("/graph")
+	graph.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret))
+
+	graph.GET("/:id", r.GraphController.Get)
+	graph.POST("/", r.GraphController.Create)
 
 	return router
 }
