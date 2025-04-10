@@ -1,8 +1,7 @@
 package dto_response
 
 type AddNodeResponse struct {
-	ID string `bson:"id" json:"id"` // Уникальный ID узла
-	BaseResponse
+	IdNode string `bson:"idNode" json:"idNode"` // Уникальный ID узла
 }
 
 type ChangeNodeResponse struct {

@@ -10,22 +10,25 @@ import (
 )
 
 type Router struct {
-	UserController  *controller.UserController
-	UtilsController *controller.UtilsController
-	AuthController  *controller.AuthController
-	GraphController *controller.GraphController
-	AppConfig       *config.AppConfig
+	UserController    *controller.UserController
+	UtilsController   *controller.UtilsController
+	AuthController    *controller.AuthController
+	GraphController   *controller.GraphController
+	ContactController *controller.ContactController
+	AppConfig         *config.AppConfig
 }
 
 func NewRouter(userController *controller.UserController, utilsController *controller.UtilsController,
 	AuthController *controller.AuthController, GraphController *controller.GraphController,
+	ContactController *controller.ContactController,
 	AppConfig *config.AppConfig) *Router {
 	return &Router{
-		UserController:  userController,
-		UtilsController: utilsController,
-		AuthController:  AuthController,
-		GraphController: GraphController,
-		AppConfig:       AppConfig,
+		UserController:    userController,
+		UtilsController:   utilsController,
+		AuthController:    AuthController,
+		GraphController:   GraphController,
+		ContactController: ContactController,
+		AppConfig:         AppConfig,
 	}
 }
 
@@ -60,6 +63,11 @@ func (r *Router) InitRoutes() *gin.Engine {
 
 	graph.GET("/:id", r.GraphController.Get)
 	graph.POST("/", r.GraphController.Create)
+
+	contact := api.Group("/contact")
+	contact.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret))
+
+	contact.POST("/", r.ContactController.Add)
 
 	return router
 }

@@ -49,7 +49,14 @@ func Run() {
 
 	var GraphController *controller.GraphController = controller.NewGraphController(GraphService)
 
-	var router = router.NewRouter(UserController, UtilsController, AuthController, GraphController, &config)
+	var NodeRepository repository_interface.NodeRepository = repository.NewNodeRepository(client, config.DatabaseName, 10)
+	var EdgeRepository repository_interface.EdgeRepository = repository.NewEdgeRepository(client, config.DatabaseName, 10)
+
+	var ContactService *service.ContactService = service.NewContactService(NodeRepository, EdgeRepository, &config)
+
+	var ContactController *controller.ContactController = controller.NewContactController(ContactService)
+
+	var router = router.NewRouter(UserController, UtilsController, AuthController, GraphController, ContactController, &config)
 
 	routesEngine := router.InitRoutes()
 
