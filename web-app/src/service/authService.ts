@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
+import { info } from '../utils/logger'
 
-//TODO: Use ENV variables
-const API_URL = 'http://localhost:8080/api/auth';
+const API_URL = process.env.REACT_APP_API_URL
 
 interface User {
   nickname: string;
@@ -18,16 +18,15 @@ interface AuthResponse {
 
 interface ApiError {
     message: string;
-    // Дополнительные поля ошибки, если они есть в вашем API
   }
   
 
 export const AuthService = {
   async login(user: User): Promise<AuthResponse> {
     try {
-        console.log("AuthService: ", user)
-        const response = await axios.post<AuthResponse>(`${API_URL}/login`, user);
-        console.log(response)
+        info("AuthService: ", user)
+        const response = await axios.post<AuthResponse>(`${API_URL}auth/login`, user);
+        info(response)
         return response.data;
       } catch (error) {
         console.error(error)
@@ -37,7 +36,7 @@ export const AuthService = {
   },
 
   async register(user: User): Promise<AuthResponse> {
-    const response = await axios.post(`${API_URL}/register`, user);
+    const response = await axios.post(`${API_URL}auth/register`, user);
     return response.data;
   },
 

@@ -8,7 +8,7 @@ const Header = () => {
   return (
     <Box bg="teal.500" color="white" display="flex" flexDirection={"column"}>
       <MainHeader>
-        <Logo>MyApp</Logo>
+        <Logo>Социальные графы</Logo>
         <nav>
           <ChakraLink
             as={RouterLink}

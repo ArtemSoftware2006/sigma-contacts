@@ -11,7 +11,6 @@ import {
   IconButton,
   FormLabel,
   FormControl,
-  FormErrorMessage,
   useColorModeValue,
   InputGroup,
   InputRightElement,
@@ -21,6 +20,7 @@ import {
   ScaleFade
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { info } from '../../utils/logger'
 
 const LoginPage: React.FC = () => {
   const [nickname, setNickname] = useState('');
@@ -39,7 +39,7 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(nickname, password);
+    info(nickname, password);
     login(nickname, password);
   };
 

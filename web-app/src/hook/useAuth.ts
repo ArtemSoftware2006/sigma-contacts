@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { AuthService } from '../service/authService';
 import { useNavigate } from 'react-router-dom';
+import { info } from '../utils/logger'
 
-export const useAuth = () : any => {
+export const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -26,9 +27,10 @@ export const useAuth = () : any => {
     try {
       setLoading(true);
       const { token, user } = await AuthService.register({ nickname, password });
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      navigate('/');
+      //TODO: вернуть из бека токен!!!
+      info(token, user)
+
+      logout()
     } catch (err) {
       const error = err as Error
       setError(error.message || 'Registration failed');
@@ -38,7 +40,8 @@ export const useAuth = () : any => {
   };
 
   const logout = () => {
-    AuthService.logout();
+    //TODO: реализовать на беке
+    //AuthService.logout();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');

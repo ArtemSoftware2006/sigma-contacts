@@ -1,64 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import Graph from 'graphology';
+import React, { useState } from 'react';
 import Sigma from 'sigma';
 import SigmaContainer from '../sigmaContainer/SigmaContainer';
-import { GraphService } from '../../service/graphService';
+import { Node as MyNode } from '../../types/node';
+import { NodeContextMenu } from '../nodeContextMenu/NodeContextMenu';
+import { useGraphStore } from '../../hook/useGraphStore';
+import { info } from '../../utils/logger'
 import './Graph.css';
 
 interface GraphComponentProps {
-  onNodeClick?: (nodeData: { label: string; size: number }) => void;
-  onNodeRightClick?: () => void;
+  onNodeClick?: (nodeData: MyNode) => void;
+  onAddNode?: (parentNodeId: string) => void; 
 }
 
-const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick }) => {
-  const [graph, setGraph] = useState<Graph | null>(null);
+const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick, onAddNode }) => {
+  // Используем наш хук для управления состоянием графа
+  const { graph, loading, error, refresh, setGraph } = useGraphStore();
+
+  //refresh()
+  
   const [initialAnimationDone, setInitialAnimationDone] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-
-        const apiData = await GraphService.fetchGraphData();
-        const processedData = await GraphService.processGraph(apiData);
-
-        console.log(processedData)
-        
-        const newGraph = new Graph();
-        newGraph.clear();
-
-        // Добавляем узлы
-        processedData.nodes.forEach(node => {
-          newGraph.addNode(node.id, {
-            label: node.label,
-            x: node.x,
-            y: node.y,
-            size: node.size,
-            color: node.color,
-            type: node.type
-          });
-        });
-        
-        // Добавляем ребра
-        processedData.edges.forEach(edge => {
-          newGraph.addEdge(edge.source, edge.target, {
-            label: edge.label,
-            size: edge.size,
-            color: edge.color
-          });
-        });
-        
-        setGraph(newGraph);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, []);
+  const [contextMenu, setContextMenu] = useState<{
+    show: boolean;
+    x: number;
+    y: number;
+    nodeId: string | null;
+  }>({ show: false, x: 0, y: 0, nodeId: null });
 
   const handleSigmaLoad = (sigma: Sigma) => {
     if (!initialAnimationDone) {
@@ -75,20 +41,49 @@ const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick }) => {
 
     sigma.on("clickNode", ({ node }) => {
       const nodeAttributes = sigma.getGraph().getNodeAttributes(node);
-      console.log("Клик по узлу:", node, nodeAttributes);
+      info("Клик по узлу:", node, nodeAttributes);
 
       if (onNodeClick) {
-        onNodeClick({
+        const resultNode: MyNode = {
           label: nodeAttributes.label,
+          id: node,
           size: nodeAttributes.size,
-        });
+          color: nodeAttributes.color,
+          x: nodeAttributes.x,
+          y: nodeAttributes.y,
+          type: nodeAttributes.type,
+          parentId : nodeAttributes.parentId
+        };
+        onNodeClick(resultNode);
       }
+      setContextMenu({ show: false, x: 0, y: 0, nodeId: null });
     });
 
-    sigma.on("rightClickNode", ({ node }) => {
+    sigma.on("rightClickNode", ({ node, event }) => {
+      //event.preventDefault();
       const nodeAttributes = sigma.getGraph().getNodeAttributes(node);
-      console.log("Правая кнопка по узлу:", node, nodeAttributes);
+      info("Правая кнопка по узлу:", node, nodeAttributes);
+      
+      setContextMenu({
+        show: true,
+        x: event.x - 100,
+        y: event.y + 30,
+        nodeId: node
+      });
     });
+
+    sigma.on("clickStage", () => {
+      setContextMenu({ show: false, x: 0, y: 0, nodeId: null });
+    });
+  };
+
+  const handleAddNode = () => {
+    if (contextMenu.nodeId && onAddNode) {
+      onAddNode(contextMenu.nodeId);
+      // После добавления узла можно обновить граф:
+      // setGraph(updatedGraph);
+    }
+    setContextMenu({ show: false, x: 0, y: 0, nodeId: null });
   };
 
   if (loading) return <div className="graph-status">Loading graph...</div>;
@@ -108,6 +103,15 @@ const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick }) => {
         style={{ width: '100%', height: '100%' }}
         onLoad={handleSigmaLoad}
       />
+
+      {contextMenu.show && (
+        <NodeContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onAddNode={handleAddNode}
+          onClose={() => setContextMenu({ show: false, x: 0, y: 0, nodeId: null })}
+        />
+      )}
     </div>
   );
 };

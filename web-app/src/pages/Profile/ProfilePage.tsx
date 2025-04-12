@@ -12,6 +12,7 @@ import {
   FormLabel,
   VStack
 } from '@chakra-ui/react';
+import { useAuth } from '../../hook/useAuth';
 
 type Profile = {
   firstName: string;
@@ -26,6 +27,7 @@ const ProfilePage = () => {
     avatarUrl: 'https://bit.ly/dan-abramov' // Замените на реальную ссылку
   });
   
+  const {logout} = useAuth()
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const toast = useToast();
 
@@ -108,6 +110,14 @@ const ProfilePage = () => {
               onClick={() => setIsEditing(true)}
             >
               Редактировать профиль
+            </Button>
+            <br/>
+            <Button
+              mt={6}
+              colorScheme="blue"
+              onClick={() => logout()}
+            >
+              Выйти
             </Button>
           </Box>
         )}
