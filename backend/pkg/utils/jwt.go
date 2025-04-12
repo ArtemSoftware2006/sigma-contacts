@@ -11,7 +11,7 @@ func GenerateToken(userID string, secret string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": userID,
 		// TODO: Use constant for JWT_LIFETIME
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
+		"exp": time.Now().Add(time.Hour * 1024).Unix(),
 	})
 
 	return token.SignedString([]byte(secret))

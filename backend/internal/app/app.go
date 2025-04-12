@@ -56,7 +56,10 @@ func Run() {
 
 	var ContactController *controller.ContactController = controller.NewContactController(ContactService)
 
-	var router = router.NewRouter(UserController, UtilsController, AuthController, GraphController, ContactController, &config)
+	var NodeService *service.NodeService = service.NewNodeService(NodeRepository, &config)
+	var Nodecontroller *controller.NodeController = controller.NewNodeController(NodeService)
+
+	var router = router.NewRouter(UserController, UtilsController, AuthController, GraphController, ContactController, Nodecontroller, &config)
 
 	routesEngine := router.InitRoutes()
 

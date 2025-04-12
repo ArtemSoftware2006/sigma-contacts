@@ -80,3 +80,43 @@ func (er *EdgeRepository) Add(targetNodeId string, req *dto_request.AddEdgeReque
 	// Возвращаем ответ, возможно с ID нового узла
 	return &dto_response.AddEdgeResponse{IdEdge: newEdgeID}, nil
 }
+
+func (er *EdgeRepository) Change(graphId string, req *dto_request.ChangeEdgeRequest) (*dto_response.ChangeEdgeResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), er.dbTimeout)
+	defer cancel()
+
+	collection := er.db.Collection("graphs")
+
+	objID, err := primitive.ObjectIDFromHex(graphId)
+	if err != nil {
+		log.Error("Ошибка обновления документа:", err)
+		return nil, err
+	}
+
+	// Создаем фильтр для поиска документа и конкретного узла
+	filter := bson.M{
+		"_id":      objID,
+		"nodes.id": req.Id,
+	}
+
+	// Создаем обновление для замены узла
+	update := bson.M{
+		"$set": bson.M{
+			"nodes.$": req, // Позиционный оператор $ заменяет найденный элемент
+		},
+	}
+
+	// Выполняем обновление
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		log.Error("Ошибка обновления документа:", err)
+		return nil, err
+	}
+
+	if result.MatchedCount == 0 {
+		log.Error("Ошибка обновления документа:", err)
+		return nil, err
+	}
+
+	return &dto_response.ChangeEdgeResponse{}, nil
+}

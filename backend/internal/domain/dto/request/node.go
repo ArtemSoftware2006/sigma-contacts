@@ -18,7 +18,6 @@ type AddNodeRequest struct {
 
 type ChangeNodeRequest struct {
 	Id        string   `bson:"id"`
-	GraphId   string   `json:"graphId"`
 	Label     string   `bson:"label" json:"label"`
 	X         float64  `bson:"x" json:"x"`
 	Y         float64  `bson:"y" json:"y"`

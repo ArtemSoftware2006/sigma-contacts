@@ -7,4 +7,5 @@ import (
 
 type NodeRepository interface {
 	Add(*dto_request.AddNodeRequest) (*dto_response.AddNodeResponse, error)
+	Change(string, *dto_request.ChangeNodeRequest) (*dto_response.ChangeNodeResponse, error)
 }

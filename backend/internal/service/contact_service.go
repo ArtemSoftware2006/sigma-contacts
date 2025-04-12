@@ -49,3 +49,24 @@ func (cs *ContactService) AddContact(req *dto_request.AddContactRequest) (*dto_r
 		},
 	}, nil
 }
+
+func (cs *ContactService) ChangeContact(req *dto_request.ChangeContactRequest) (*dto_response.ChangeContactResponse, error) {
+	_, err := cs.nodeRepo.Change(req.GraphId, &req.Node)
+	if err != nil {
+		log.Println("ContactService: error adding node", err)
+		return nil, err
+	}
+
+	_, err = cs.edgeRepo.Change(req.GraphId, &req.Edge)
+	if err != nil {
+		log.Println("ContactService: error adding edge", err)
+		return nil, err
+	}
+
+	return &dto_response.ChangeContactResponse{
+		BaseResponse: dto_response.BaseResponse{
+			Status:  200,
+			Message: "Ok",
+		},
+	}, nil
+}

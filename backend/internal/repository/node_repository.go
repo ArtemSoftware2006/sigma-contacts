@@ -82,3 +82,44 @@ func (nr *NodeRepository) Add(req *dto_request.AddNodeRequest) (*dto_response.Ad
 	// Возвращаем ответ, возможно с ID нового узла
 	return &dto_response.AddNodeResponse{IdNode: newNodeID}, nil
 }
+
+func (nr *NodeRepository) Change(graphId string, req *dto_request.ChangeNodeRequest) (*dto_response.ChangeNodeResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), nr.dbTimeout)
+	defer cancel()
+
+	collection := nr.db.Collection("graphs")
+
+	objID, err := primitive.ObjectIDFromHex(graphId)
+	if err != nil {
+		log.Error("Ошибка обновления документа (Неверный формат ObjectId):", err)
+		return nil, err
+	}
+
+	// Создаем фильтр для поиска документа и конкретного узла
+	filter := bson.M{
+		"_id":      objID,
+		"nodes.id": req.Id,
+	}
+
+	// Создаем обновление для замены узла
+	update := bson.M{
+		"$set": bson.M{
+			"nodes.$": req, // Позиционный оператор $ заменяет найденный элемент
+		},
+	}
+
+	// Выполняем обновление
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		log.Error("Ошибка обновления документа:", err)
+		return nil, err
+	}
+
+	if result.MatchedCount == 0 {
+		log.Error("Ошибка обновления документа: (result.MatchedCount == 0)", err)
+		return nil, err
+	}
+
+	return &dto_response.ChangeNodeResponse{}, nil
+
+}

@@ -5,3 +5,7 @@ type AddContactResponse struct {
 	Edge AddEdgeResponse `json:"edge"`
 	BaseResponse
 }
+
+type ChangeContactResponse struct {
+	BaseResponse
+}

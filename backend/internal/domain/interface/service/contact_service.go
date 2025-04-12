@@ -7,4 +7,5 @@ import (
 
 type ContactService interface {
 	AddContact(*dto_request.AddContactRequest) (*dto_response.AddContactResponse, error)
+	ChangeContact(*dto_request.ChangeContactRequest) (*dto_response.ChangeContactResponse, error)
 }

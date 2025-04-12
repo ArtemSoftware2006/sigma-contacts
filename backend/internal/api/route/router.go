@@ -15,12 +15,13 @@ type Router struct {
 	AuthController    *controller.AuthController
 	GraphController   *controller.GraphController
 	ContactController *controller.ContactController
+	NodeController    *controller.NodeController
 	AppConfig         *config.AppConfig
 }
 
 func NewRouter(userController *controller.UserController, utilsController *controller.UtilsController,
 	AuthController *controller.AuthController, GraphController *controller.GraphController,
-	ContactController *controller.ContactController,
+	ContactController *controller.ContactController, NodeController *controller.NodeController,
 	AppConfig *config.AppConfig) *Router {
 	return &Router{
 		UserController:    userController,
@@ -28,6 +29,7 @@ func NewRouter(userController *controller.UserController, utilsController *contr
 		AuthController:    AuthController,
 		GraphController:   GraphController,
 		ContactController: ContactController,
+		NodeController:    NodeController,
 		AppConfig:         AppConfig,
 	}
 }
@@ -68,6 +70,12 @@ func (r *Router) InitRoutes() *gin.Engine {
 	contact.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret))
 
 	contact.POST("/", r.ContactController.Add)
+	contact.PUT("/", r.ContactController.Change)
+
+	node := api.Group("/node")
+	node.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret))
+
+	node.PUT("/:id", r.NodeController.Change)
 
 	return router
 }

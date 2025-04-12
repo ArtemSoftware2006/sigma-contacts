@@ -7,4 +7,5 @@ import (
 
 type EdgeRepository interface {
 	Add(string, *dto_request.AddEdgeRequest) (*dto_response.AddEdgeResponse, error)
+	Change(string, *dto_request.ChangeEdgeRequest) (*dto_response.ChangeEdgeResponse, error)
 }
