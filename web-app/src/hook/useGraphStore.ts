@@ -37,7 +37,8 @@ export const useGraphStore = () => {
       });
       
       apiData.edges.forEach(edge => {
-        newGraph.addEdge(edge.source, edge.target, {
+        newGraph.addEdgeWithKey(edge.edgeId, edge.source, edge.target, {
+          id: edge.edgeId,
           label: edge.label,
           size: edge.size,
           color: edge.color

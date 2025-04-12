@@ -12,10 +12,11 @@ import SettingsPanel from '../../components/settingPanel/SettingsPanel';
 import { Node, NodeChange } from '../../types/node'
 import { useGraphStore } from '../../hook/useGraphStore';
 import { GraphService } from '../../service/graphService';
-import { AddContactRequest } from '../../types/contact';
+import { AddContactRequest, DeleteContactRequest } from '../../types/contact';
 import { info } from '../../utils/logger'
 import { SettingPanelState } from '../../enums/settingPanelMode';
 import { NodeService } from '../../service/nodeService';
+import { ContactService } from '../../service/contactService';
 
 const Main: FC = () => {
   const [isSettingsOpen, setSettingsOpen] = useState(false);
@@ -35,7 +36,7 @@ const Main: FC = () => {
   const handleEditNode = async (editNode: Node) => {
     setSettingPanelState(SettingPanelState.Edit)
 
-    const nodeChange : NodeChange = {
+    const nodeChange: NodeChange = {
       id: editNode.id,
       label: editNode.label,
       x: editNode.x,
@@ -49,16 +50,48 @@ const Main: FC = () => {
     }
 
     const resposne = await NodeService.ChangeNode(process.env.REACT_APP_GRAPH, nodeChange)
-    setGraphVersion(graphVersion+1)
+    setGraphVersion(graphVersion + 1)
 
     info(resposne)
 
     refresh()
-  } 
+  }
+
+  const handleDeleteNode = async (deletedNode: Node) => {
+    setSettingPanelState(SettingPanelState.Delete)
+
+    // Найдем первое ребро, у которого target совпадает с nodeId
+    const edgeId = graph?.edges().find(edgeId => graph.target(edgeId) === deletedNode.id);
+
+    info("EDGES")
+    graph?.edges().forEach(edge => {
+      info(edge)
+    })
+
+    if (edgeId == undefined) {
+      console.log(`Ребро не найдено! Его ID: ${edgeId}`);
+      return
+    } 
+
+    const contactDeleted : DeleteContactRequest = {
+      graphId: process.env.REACT_APP_GRAPH,
+      nodeId: deletedNode.id,
+      edgeId: edgeId!
+    }
+
+    info(contactDeleted)
+
+    const resposne = await ContactService.DeleteContact(contactDeleted)
+    setGraphVersion(graphVersion + 1)
+
+    info(resposne)
+
+    refresh()
+  }
 
   const handleAddNode = async (nodeData: Omit<Node, "id">) => {
     if (!graph || !parentNodeId) return;
-    
+
     const newGraph = graph.copy();
 
     // Проверка существования родительского узла
@@ -67,33 +100,33 @@ const Main: FC = () => {
       return;
     }
 
-    const addContactRequest : AddContactRequest = {
-        node : {
-          graphId : `${process.env.REACT_APP_GRAPH}`,
-          node: {
-            label: nodeData.label,
-            x: Math.floor(Math.random() * 7) - 3,
-            y: Math.floor(Math.random() * 7) - 3,
-            size: nodeData.size,
-            type: "circle",
-            color: nodeData.color,
-            isSpecial: false,
-            parentId: parentNodeId
-          }
-        },
-        edge: {
-          graphId: `${process.env.REACT_APP_GRAPH}`,
-          edge: {
-            source: parentNodeId,
-            label: "TEST",
-            color: nodeData.color ,
-            size: 1,
-          }
+    const addContactRequest: AddContactRequest = {
+      node: {
+        graphId: `${process.env.REACT_APP_GRAPH}`,
+        node: {
+          label: nodeData.label,
+          x: Math.floor(Math.random() * 7) - 3,
+          y: Math.floor(Math.random() * 7) - 3,
+          size: nodeData.size,
+          type: "circle",
+          color: nodeData.color,
+          isSpecial: false,
+          parentId: parentNodeId
         }
+      },
+      edge: {
+        graphId: `${process.env.REACT_APP_GRAPH}`,
+        edge: {
+          source: parentNodeId,
+          label: "TEST",
+          color: nodeData.color,
+          size: 1,
+        }
+      }
     }
 
-    const response = await GraphService.AddContact(addContactRequest)
-    setGraphVersion(graphVersion+1)
+    const response = await ContactService.AddContact(addContactRequest)
+    setGraphVersion(graphVersion + 1)
 
     refresh()
   };
@@ -102,7 +135,7 @@ const Main: FC = () => {
     <MainWrapper>
       <Content>
         <MainArea>
-          <GraphComponent 
+          <GraphComponent
             key={graphVersion}
             onNodeClick={(nodeData) => {
               setSettingsOpen(true)
@@ -111,8 +144,8 @@ const Main: FC = () => {
               setTitleSettingsPanel(settingNodeText)
               setSelectedNode(nodeData)
               info(nodeData)
-            }} 
-            onAddNode={(parentNodeId : string) => {
+            }}
+            onAddNode={(parentNodeId: string) => {
               setSettingPanelState(SettingPanelState.Add)
               info(settingPanelState)
               setParentNodeId(parentNodeId)
@@ -130,6 +163,7 @@ const Main: FC = () => {
             onStateChange={setSettingPanelState}
             onAddNode={handleAddNode}
             onEditNode={handleEditNode}
+            onDeleteNode={handleDeleteNode}
           />
         )}
       </Content>

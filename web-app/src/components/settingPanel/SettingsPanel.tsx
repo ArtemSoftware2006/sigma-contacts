@@ -20,7 +20,8 @@ interface SettingsPanelProps {
   settingPanelState: SettingPanelState;
   onStateChange?: (newState: SettingPanelState) => void; // Колбэк для изменения состояния
   onAddNode?: (nodeData: Omit<Node, 'id'>) => void; // Колбэк с данными нового узла
-  onEditNode?: (editNode: Node) => void; // Колбэк с данными нового узла
+  onEditNode?: (editNode: Node) => void; 
+  onDeleteNode?: (deletedNode: Node) => void; 
 }
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({
@@ -29,7 +30,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   settingPanelState,
   onAddNode,
   onStateChange,
-  onEditNode
+  onEditNode,
+  onDeleteNode
 }) => {
   const [newNode, setNewNode] = useState<Omit<Node, 'id'>>({
     label: '',
@@ -50,6 +52,18 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     color: node?.color || "#666",
     parentId : node?.parentId || ""
   });
+
+  const [deletedNode, setDeletedNode] = useState<Node>({
+    id: node?.id || "",
+    label: node?.label || "",
+    x: node?.x || 0,
+    y: node?.y || 0,
+    size: node?.size || 0,
+    type: node?.type || "",
+    color: node?.color || "#666",
+    parentId : node?.parentId || ""
+  });
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -86,6 +100,13 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   const handleEditClick = () => {
     if (onEditNode) {
       onEditNode(editNode);
+    }
+  };
+
+  const hendleDeleteClick = () => {
+    if (onDeleteNode) {
+      setDeletedNode(node!)
+      onDeleteNode(deletedNode);
     }
   };
 
@@ -181,6 +202,13 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             }}
           >
             Редактировать
+          </Button>
+          <Button
+            colorScheme="blue"
+            mt={4}
+            onClick={hendleDeleteClick}
+          >
+            Удалить
           </Button>
         </>
       ) : null

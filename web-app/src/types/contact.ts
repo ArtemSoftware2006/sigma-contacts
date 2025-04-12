@@ -21,6 +21,17 @@ export interface ChangeContactRequest {
     edge: Edge
 }
 
+export interface DeleteContactRequest {
+    graphId: string
+    nodeId: string
+    edgeId: string
+}
+
+export interface DeleteContactResponse extends BaseResponse {
+}
+
+
+
 export interface ChangeContactResponse extends BaseResponse {
 
 }

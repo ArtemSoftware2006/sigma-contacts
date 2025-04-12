@@ -1,6 +1,6 @@
 
 export interface Edge {
-  id: string;
+  edgeId: string;
   source: string;
   target: string;
   label?: string;

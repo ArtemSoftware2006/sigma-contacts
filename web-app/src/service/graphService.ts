@@ -54,46 +54,4 @@ export class GraphService {
         return headers
 
     }
-
-    static async AddContact(addContact: AddContactRequest): Promise<AddContactNodeResponse | Error> {
-        try {
-            const authHeaders = this.setAuthHeaders();
-
-            const headers = {
-                'Content-Type': 'application/json',  // Явно указываем тип контента
-                ...authHeaders
-            };
-
-            const response = await axios.post<AddContactNodeResponse>(`${API_URL}contact/`, addContact, { headers });
-
-            info(response)
-
-            return response.data
-        } catch (error) {
-            console.error(error)
-            const axiosError = error as AxiosError<ApiError>;
-            throw new Error(axiosError.response?.data?.message || 'Post contact failed');
-        }
-    }
-
-    static async ChangeContact(changeContact: ChangeContactRequest): Promise<ChangeContactResponse | Error> {
-        try {
-            const authHeaders = this.setAuthHeaders();
-
-            const headers = {
-                'Content-Type': 'application/json',  // Явно указываем тип контента
-                ...authHeaders
-            };
-
-            const response = await axios.put<ChangeContactResponse>(`${API_URL}contact/`, changeContact, { headers });
-
-            info(response)
-
-            return response.data
-        } catch (error) {
-            console.error(error)
-            const axiosError = error as AxiosError<ApiError>;
-            throw new Error(axiosError.response?.data?.message || 'Put contact failed');
-        }
-    }
 }
