@@ -9,3 +9,7 @@ type AddContactResponse struct {
 type ChangeContactResponse struct {
 	BaseResponse
 }
+
+type DeleteContactResponse struct {
+	BaseResponse
+}

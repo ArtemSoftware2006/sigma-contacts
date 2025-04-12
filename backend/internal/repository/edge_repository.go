@@ -120,3 +120,38 @@ func (er *EdgeRepository) Change(graphId string, req *dto_request.ChangeEdgeRequ
 
 	return &dto_response.ChangeEdgeResponse{}, nil
 }
+
+func (nr *EdgeRepository) Delete(graphId string, edgeId string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), nr.dbTimeout)
+	defer cancel()
+
+	collection := nr.db.Collection("graphs")
+
+	objID, err := primitive.ObjectIDFromHex(graphId)
+	if err != nil {
+		log.Error("Ошибка удаления ребра (неверный ObjectId):", err)
+		return err
+	}
+
+	// Удаляем узел с указанным id из массива nodes
+	filter := bson.M{"_id": objID}
+	update := bson.M{
+		"$pull": bson.M{
+			"edges": bson.M{"edgeId": edgeId},
+		},
+	}
+
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		log.Error("Ошибка при удалении ребра из графа:", err)
+		return err
+	}
+
+	if result.ModifiedCount == 0 {
+		log.Warn("Ребро не найден или уже удалён (ModifiedCount == 0)")
+		return fmt.Errorf("ребро с id %s не найден в графе %s", edgeId, graphId)
+	}
+
+	log.Info("Ребро успешно удалён")
+	return nil
+}

@@ -71,6 +71,7 @@ func (r *Router) InitRoutes() *gin.Engine {
 
 	contact.POST("/", r.ContactController.Add)
 	contact.PUT("/", r.ContactController.Change)
+	contact.DELETE("/", r.ContactController.Delete)
 
 	node := api.Group("/node")
 	node.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret))

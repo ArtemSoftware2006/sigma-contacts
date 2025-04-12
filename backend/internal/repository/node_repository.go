@@ -121,5 +121,39 @@ func (nr *NodeRepository) Change(graphId string, req *dto_request.ChangeNodeRequ
 	}
 
 	return &dto_response.ChangeNodeResponse{}, nil
+}
 
+func (nr *NodeRepository) Delete(graphId string, nodeId string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), nr.dbTimeout)
+	defer cancel()
+
+	collection := nr.db.Collection("graphs")
+
+	objID, err := primitive.ObjectIDFromHex(graphId)
+	if err != nil {
+		log.Error("Ошибка удаления узла (неверный ObjectId):", err)
+		return err
+	}
+
+	// Удаляем узел с указанным id из массива nodes
+	filter := bson.M{"_id": objID}
+	update := bson.M{
+		"$pull": bson.M{
+			"nodes": bson.M{"id": nodeId},
+		},
+	}
+
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		log.Error("Ошибка при удалении узла из графа:", err)
+		return err
+	}
+
+	if result.ModifiedCount == 0 {
+		log.Warn("Узел не найден или уже удалён (ModifiedCount == 0)")
+		return fmt.Errorf("узел с id %s не найден в графе %s", nodeId, graphId)
+	}
+
+	log.Info("Узел успешно удалён")
+	return nil
 }

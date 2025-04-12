@@ -44,15 +44,15 @@ func Run() {
 	var AuthService service.AuthService = *service.NewAuthService(userRepo, &config)
 	var AuthController *controller.AuthController = controller.NewAuthController(&AuthService)
 
-	var GraphRepository repository.GraphRepository = *repository.NewGraphRepository(client, config.DatabaseName, 10)
-	var GraphService *service.GraphService = service.NewGraphService(&GraphRepository)
+	var GraphRepository *repository.GraphRepository = repository.NewGraphRepository(client, config.DatabaseName, 10)
+	var GraphService *service.GraphService = service.NewGraphService(GraphRepository)
 
 	var GraphController *controller.GraphController = controller.NewGraphController(GraphService)
 
 	var NodeRepository repository_interface.NodeRepository = repository.NewNodeRepository(client, config.DatabaseName, 10)
 	var EdgeRepository repository_interface.EdgeRepository = repository.NewEdgeRepository(client, config.DatabaseName, 10)
 
-	var ContactService *service.ContactService = service.NewContactService(NodeRepository, EdgeRepository, &config)
+	var ContactService *service.ContactService = service.NewContactService(NodeRepository, EdgeRepository, GraphRepository, &config)
 
 	var ContactController *controller.ContactController = controller.NewContactController(ContactService)
 

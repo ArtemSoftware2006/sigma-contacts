@@ -10,3 +10,9 @@ type ChangeContactRequest struct {
 	Node    ChangeNodeRequest `json:"node"`
 	Edge    ChangeEdgeRequest `json:"edge"`
 }
+
+type DeleteContactRequest struct {
+	GraphId string `json:"graphId"`
+	NodeId  string `json:"nodeId"`
+	EdgeId  string `json:"edgeId"`
+}

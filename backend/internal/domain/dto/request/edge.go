@@ -13,7 +13,7 @@ type AddEdgeRequest struct {
 }
 
 type ChangeEdgeRequest struct {
-	Id     string  `json:"id"`
+	Id     string  `json:"edgeId"`
 	Source string  `bson:"source"` // Источник (ID узла)
 	Target string  `bson:"target"` // Цель (ID узла)
 	Label  string  `bson:"label"`  // Метка ребра

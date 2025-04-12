@@ -25,7 +25,7 @@ func (c *ContactController) Add(ctx *gin.Context) {
 		return
 	}
 
-	addContactResponse, err := c.ContactService.AddContact(&req)
+	addContactResponse, err := c.ContactService.Add(&req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -41,9 +41,25 @@ func (c *ContactController) Change(ctx *gin.Context) {
 		return
 	}
 
-	changeContactResponse, err := c.ContactService.ChangeContact(&req)
+	changeContactResponse, err := c.ContactService.Change(&req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, changeContactResponse)
+}
+
+func (c *ContactController) Delete(ctx *gin.Context) {
+	var req dto_request.DeleteContactRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	changeContactResponse, err := c.ContactService.Delete(&req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
