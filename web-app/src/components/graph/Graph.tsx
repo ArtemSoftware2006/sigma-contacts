@@ -59,10 +59,10 @@ const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick, onAddNode 
       setContextMenu({ show: false, x: 0, y: 0, nodeId: null });
     });
 
-    sigma.on("rightClickNode", ({ node, event }) => {
+    sigma.on("enterNode", ({ node, event }) => {
       //event.preventDefault();
       const nodeAttributes = sigma.getGraph().getNodeAttributes(node);
-      info("Правая кнопка по узлу:", node, nodeAttributes);
+      //info("Правая кнопка по узлу:", node, nodeAttributes);
       
       setContextMenu({
         show: true,
@@ -70,6 +70,11 @@ const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick, onAddNode 
         y: event.y + 30,
         nodeId: node
       });
+    });
+
+    sigma.on("leaveNode", ({ node, event }) => {
+      info("Leave Node")
+      setContextMenu({ show: false, x: 0, y: 0, nodeId: null });
     });
 
     sigma.on("clickStage", () => {

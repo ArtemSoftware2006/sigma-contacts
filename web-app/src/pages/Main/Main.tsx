@@ -11,7 +11,6 @@ import { SettingsIcon, CloseIcon } from '@chakra-ui/icons';
 import SettingsPanel from '../../components/settingPanel/SettingsPanel';
 import { Node, NodeChange } from '../../types/node'
 import { useGraphStore } from '../../hook/useGraphStore';
-import { GraphService } from '../../service/graphService';
 import { AddContactRequest, DeleteContactRequest } from '../../types/contact';
 import { info } from '../../utils/logger'
 import { SettingPanelState } from '../../enums/settingPanelMode';
@@ -62,11 +61,6 @@ const Main: FC = () => {
 
     // Найдем первое ребро, у которого target совпадает с nodeId
     const edgeId = graph?.edges().find(edgeId => graph.target(edgeId) === deletedNode.id);
-
-    info("EDGES")
-    graph?.edges().forEach(edge => {
-      info(edge)
-    })
 
     if (edgeId == undefined) {
       console.log(`Ребро не найдено! Его ID: ${edgeId}`);
