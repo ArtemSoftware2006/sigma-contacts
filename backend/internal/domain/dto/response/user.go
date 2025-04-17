@@ -8,9 +8,9 @@ type UserGetBaseAuthResponse struct {
 }
 
 type UserGetResponse struct {
-	Id       string `json:"_id"`
-	Name     string `json:"name"`
-	Surname  string `json:"surname"`
+	Id       string `bson:"_id" json:"id"`
+	Name     string `bson:"name" json:"name"`
+	Surname  string `bson:"sutnmae" json:"surname"`
 	Nickname string `json:"nickname"`
-	Password string `json:"password`
+	Password string `json:"password"`
 }

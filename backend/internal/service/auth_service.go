@@ -67,10 +67,8 @@ func (as *AuthService) Login(ctx context.Context, req *dto_request.AuthRequest) 
 		return nil, errors.New("invalid credentials")
 	}
 
-	log.Println(user.Id)
-	//TODO: Использовать user.Id, вместо user.Nickname
-	token, err := utils.GenerateToken(user.Nickname, as.config.JwtSecret)
-	log.Println(as.config.JwtSecret)
+	token, err := utils.GenerateToken(user.Id, as.config.JwtSecret)
+
 	if err != nil {
 		return nil, err
 	}

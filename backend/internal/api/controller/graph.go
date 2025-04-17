@@ -38,10 +38,12 @@ func (gc *GraphController) Create(ctx *gin.Context) {
 
 }
 func (gc *GraphController) Get(ctx *gin.Context) {
+	userId := ctx.Value("userId").(string)
+
 	id := ctx.Param("id")
 	req := dto_request.GetGraphRequest{ID: id}
 
-	resp, err := gc.GraphService.Get(&req)
+	resp, err := gc.GraphService.Get(userId, &req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -52,4 +54,45 @@ func (gc *GraphController) Get(ctx *gin.Context) {
 
 	ctx.JSON(resp.Status, resp)
 
+}
+
+func (gc *GraphController) GetByUserId(ctx *gin.Context) {
+	userId := ctx.Value("userId").(string)
+
+	req := dto_request.GetUserGraphRequest{UserId: userId}
+
+	resp, err := gc.GraphService.GetUserGraph(&req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resp.Status = http.StatusCreated
+	resp.Message = "Success"
+
+	ctx.JSON(resp.Status, resp)
+}
+
+func (gc *GraphController) CreateUserGraph(ctx *gin.Context) {
+
+	var req dto_request.CreateGraphRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := ctx.Value("userId").(string)
+
+	req.UserId = userId
+
+	resp, err := gc.GraphService.CreateUserGraph(&req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resp.Status = http.StatusCreated
+	resp.Message = "Success"
+
+	ctx.JSON(resp.Status, resp)
 }

@@ -46,6 +46,11 @@ func (r *Router) InitRoutes() *gin.Engine {
 	}))
 
 	api := router.Group("/api")
+
+	auth := api.Group("/auth")
+	auth.POST("/register", r.AuthController.Register)
+	auth.POST("/login", r.AuthController.Login)
+
 	utils := api.Group("/utils")
 
 	utils.GET("/ping", r.UserController.Ping)
@@ -56,14 +61,12 @@ func (r *Router) InitRoutes() *gin.Engine {
 	users.GET("/:id", r.UserController.GetUser)
 	users.POST("/", r.UserController.CreateUser)
 
-	auth := api.Group("/auth")
-	auth.POST("/register", r.AuthController.Register)
-	auth.POST("/login", r.AuthController.Login)
-
 	graph := api.Group("/graph")
 	graph.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret))
 
 	graph.GET("/:id", r.GraphController.Get)
+	graph.GET("/userGraph", r.GraphController.GetByUserId)
+	graph.POST("/userGraph", r.GraphController.CreateUserGraph)
 	graph.POST("/", r.GraphController.Create)
 
 	contact := api.Group("/contact")

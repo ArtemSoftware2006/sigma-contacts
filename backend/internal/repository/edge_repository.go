@@ -48,7 +48,7 @@ func (er *EdgeRepository) Add(targetNodeId string, req *dto_request.AddEdgeReque
 
 	// Создаем новый узел с сгенерированным ID
 	newEdge := bson.M{
-		"id":     newEdgeID,
+		"edgeId": newEdgeID,
 		"label":  req.Edge.Label,  // предполагается, что label приходит в запросе
 		"source": req.Edge.Source, // Откуда
 		"target": targetNodeId,    // Куда

@@ -9,7 +9,7 @@ type AddNodeDto struct {
 	Type      string  `bson:"type" json:"type"`
 	IsSpecial bool    `bson:"isSpecial" json:"isSpecial"`
 	// Children  []string `bson:"children,omitempty" json:"children,omitempty"`
-	ParentID *string `bson:"parentId" json:"parentId"`
+	ParentID string `bson:"parentId" json:"parentId"`
 }
 type AddNodeRequest struct {
 	GraphId string     `json:"graphId"`

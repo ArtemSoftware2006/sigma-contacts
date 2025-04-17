@@ -7,5 +7,8 @@ import (
 
 type GraphService interface {
 	Create(*dto_request.CreateGraphRequest) (*dto_response.CreateGraphResponse, error)
-	Get(*dto_request.GetGraphRequest) (*dto_response.GetGraphResponse, error)
+	CheckGraphForUser(userId string, graph *dto_response.GetGraphResponse) bool
+	GetUserGraph(*dto_request.GetUserGraphRequest) (*dto_response.GetGraphResponse, error)
+	CreateUserGraph(*dto_request.CreateGraphRequest) (*dto_response.CreateGraphResponse, error)
+	Get(string, *dto_request.GetGraphRequest) (*dto_response.GetGraphResponse, error)
 }

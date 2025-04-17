@@ -32,7 +32,7 @@ func AuthMiddleware(jwtSecret string) gin.HandlerFunc {
 			return
 		}
 
-		ctx.Set("userID", userID)
+		ctx.Set("userId", userID)
 		ctx.Next()
 	}
 }

@@ -8,4 +8,5 @@ import (
 type GraphRepository interface {
 	Create(*dto_request.CreateGraphRequest) (*dto_response.CreateGraphResponse, error)
 	Get(*dto_request.GetGraphRequest) (*dto_response.GetGraphResponse, error)
+	GetUserGraph(*dto_request.GetUserGraphRequest) (*dto_response.GetGraphResponse, error)
 }
