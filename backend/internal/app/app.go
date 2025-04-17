@@ -35,35 +35,33 @@ func Run() {
 		}
 	}()
 
-	var userRepo repository_interface.UserRepository = repository.NewUserRepository(client, config.DatabaseName, 10)
-	var UserService service_interface.UserService = service.NewUserService(userRepo)
+	//Repositories
+	//TODO: передавать в Repositories context с задержкой. А не формировать его частично в конструкторе, частично в самом Repository
+	const DB_TIMEOUT = 10
 
-	var UserController *controller.UserController = controller.NewUserController(&UserService)
-	var UtilsController *controller.UtilsController = controller.NewUtilsController()
+	var UserRepository repository_interface.UserRepository = repository.NewUserRepository(client, config.DatabaseName, DB_TIMEOUT)
+	var EdgeRepository repository_interface.EdgeRepository = repository.NewEdgeRepository(client, config.DatabaseName, DB_TIMEOUT)
+	var GraphRepository repository_interface.GraphRepository = repository.NewGraphRepository(client, config.DatabaseName, DB_TIMEOUT)
+	var NodeRepository repository_interface.NodeRepository = repository.NewNodeRepository(client, config.DatabaseName, DB_TIMEOUT)
 
-	var AuthService service.AuthService = *service.NewAuthService(userRepo, &config)
-	var AuthController *controller.AuthController = controller.NewAuthController(&AuthService)
-
-	var GraphRepository *repository.GraphRepository = repository.NewGraphRepository(client, config.DatabaseName, 10)
-	var NodeRepository repository_interface.NodeRepository = repository.NewNodeRepository(client, config.DatabaseName, 10)
-
-	var GraphService *service.GraphService = service.NewGraphService(GraphRepository, userRepo, NodeRepository)
-
-	var GraphController *controller.GraphController = controller.NewGraphController(GraphService)
-
-	var EdgeRepository repository_interface.EdgeRepository = repository.NewEdgeRepository(client, config.DatabaseName, 10)
-
+	//Services
+	var UserService service_interface.UserService = service.NewUserService(UserRepository)
+	var NodeService *service.NodeService = service.NewNodeService(NodeRepository, &config)
+	var AuthService service.AuthService = *service.NewAuthService(UserRepository, &config)
+	var GraphService *service.GraphService = service.NewGraphService(GraphRepository, UserRepository, NodeRepository)
 	var ContactService *service.ContactService = service.NewContactService(NodeRepository, EdgeRepository, GraphRepository, &config)
 
+	//Controllers
+	var UserController *controller.UserController = controller.NewUserController(&UserService)
+	var UtilsController *controller.UtilsController = controller.NewUtilsController()
+	var AuthController *controller.AuthController = controller.NewAuthController(&AuthService)
+	var GraphController *controller.GraphController = controller.NewGraphController(GraphService)
 	var ContactController *controller.ContactController = controller.NewContactController(ContactService)
+	var NodeController *controller.NodeController = controller.NewNodeController(NodeService)
 
-	var NodeService *service.NodeService = service.NewNodeService(NodeRepository, &config)
-	var Nodecontroller *controller.NodeController = controller.NewNodeController(NodeService)
-
-	var router = router.NewRouter(UserController, UtilsController, AuthController, GraphController, ContactController, Nodecontroller, &config)
-
+	//Routes
+	var router = router.NewRouter(UserController, UtilsController, AuthController, GraphController, ContactController, NodeController, &config)
 	routesEngine := router.InitRoutes()
-
 	routesEngine.Run()
 }
 
