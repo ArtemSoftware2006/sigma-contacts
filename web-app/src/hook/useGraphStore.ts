@@ -47,7 +47,8 @@ export const useGraphStore = () => {
       
       setGraph(newGraph);
     } catch (err) {
-      if ((err as Error).message.includes("")) {
+      console.log((err as Error).message)
+      if ((err as Error).message.includes("mongo")) {
         await GraphService.CreateUserGraph()
         return
       }
