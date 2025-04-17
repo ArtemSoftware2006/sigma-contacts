@@ -3,6 +3,9 @@ import Sigma from 'sigma';
 import { SigmaContainerProps } from '../../types/sigma';
 import { NodeChange } from '../../types/node';
 import { NodeService } from '../../service/nodeService';
+import { GraphService } from '../../service/graphService';
+import { inflate } from 'zlib';
+import { info } from '../../utils/logger';
 
 const SigmaContainer: React.FC<SigmaContainerProps> = ({
   graph,
@@ -57,7 +60,12 @@ const SigmaContainer: React.FC<SigmaContainerProps> = ({
         parentId: nodeAttrs.parentId || ''
       };
 
-      NodeService.ChangeNode(process.env.REACT_APP_GRAPH, nodeChange)
+      const graphId = GraphService.GetGraphId();
+      if (graphId == typeof(Error)) {
+        info(graphId.toString())
+      } else {
+        NodeService.ChangeNode(graphId as string, nodeChange)
+      }
 
       draggedNode.current = null;
     });

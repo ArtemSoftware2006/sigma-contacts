@@ -16,6 +16,7 @@ import { info } from '../../utils/logger'
 import { SettingPanelState } from '../../enums/settingPanelMode';
 import { NodeService } from '../../service/nodeService';
 import { ContactService } from '../../service/contactService';
+import { GraphService } from '../../service/graphService';
 
 const Main: FC = () => {
   const [isSettingsOpen, setSettingsOpen] = useState(false);
@@ -48,7 +49,13 @@ const Main: FC = () => {
       children: []
     }
 
-    const resposne = await NodeService.ChangeNode(process.env.REACT_APP_GRAPH, nodeChange)
+    const graphId = GraphService.GetGraphId();
+    if (graphId == typeof (Error)) {
+      info(graphId.toString())
+      return
+    } 
+
+    const resposne = await NodeService.ChangeNode(graphId as string, nodeChange)
     setGraphVersion(graphVersion + 1)
 
     info(resposne)
@@ -65,10 +72,16 @@ const Main: FC = () => {
     if (edgeId == undefined) {
       console.log(`Ребро не найдено! Его ID: ${edgeId}`);
       return
+    }
+
+    const graphId = GraphService.GetGraphId();
+    if (graphId == typeof (Error)) {
+      info(graphId.toString())
+      return
     } 
 
-    const contactDeleted : DeleteContactRequest = {
-      graphId: process.env.REACT_APP_GRAPH,
+    const contactDeleted: DeleteContactRequest = {
+      graphId: graphId as string,
       nodeId: deletedNode.id,
       edgeId: edgeId!
     }
@@ -94,9 +107,15 @@ const Main: FC = () => {
       return;
     }
 
+    const graphId = GraphService.GetGraphId();
+    if (graphId == typeof (Error)) {
+      info(graphId.toString())
+      return
+    } 
+
     const addContactRequest: AddContactRequest = {
       node: {
-        graphId: `${process.env.REACT_APP_GRAPH}`,
+        graphId: `${graphId as string}`,
         node: {
           label: nodeData.label,
           x: Math.floor(Math.random() * 7) - 3,
@@ -109,7 +128,7 @@ const Main: FC = () => {
         }
       },
       edge: {
-        graphId: `${process.env.REACT_APP_GRAPH}`,
+        graphId: `${graphId as string}`,
         edge: {
           source: parentNodeId,
           label: "TEST",

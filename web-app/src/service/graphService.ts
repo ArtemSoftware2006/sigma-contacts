@@ -1,22 +1,10 @@
 import axios, { AxiosError } from "axios";
-import { GraphData,  } from "../types/graph";
+import { CreateUserGraphResponse, GraphData, GraphResponse, } from "../types/graph";
 import { Edge } from '../types/edge'
 import { Node } from '../types/node'
-import { AddContactRequest, AddContactNodeResponse, ChangeContactRequest, ChangeContactResponse } from "../types/contact";
 import { info } from "../utils/logger";
 
 const API_URL = process.env.REACT_APP_API_URL
-
-interface GraphResponse {
-    Status: string,
-    Message: string,
-    ID: string,
-    UserID: string,
-    Name: string,
-    CreatedAt: string,
-    Nodes: Node[],
-    Edges: Edge[]
-}
 
 interface ApiError {
     message: string;
@@ -29,29 +17,46 @@ interface AuthHeaders {
 
 export class GraphService {
     static async fetchGraphData(): Promise<GraphData> {
-        try {
 
-            const headers = this.setAuthHeaders();
+        const headers = this.setAuthHeaders();
 
-            const response = await axios.get<GraphResponse>(`${API_URL}graph/${process.env.REACT_APP_GRAPH}`, { headers });
+        const response = await axios.get<GraphResponse>(`${API_URL}graph/userGraph`, { headers });
 
-            info(response)
+        localStorage.setItem("graphId", response.data.id);
 
-            return { nodes: response.data.Nodes, edges: response.data.Edges };
-        } catch (error) {
-            console.error(error)
-            const axiosError = error as AxiosError<ApiError>;
-            throw new Error(axiosError.response?.data?.message || 'Get graph failed');
-        }
+        return { nodes: response.data.nodes, edges: response.data.edges };
     }
 
     static setAuthHeaders(): any {
         const token = localStorage.getItem('token');
-        info("token ", token)
 
         const headers = { Authorization: `Bearer ${token}` };
 
         return headers
+    }
 
+    static GetGraphId(): string | Error {
+        const graphId: string | null = localStorage.getItem("graphId")
+        if (graphId == null) {
+            return Error("graphId is null")
+        }
+
+        return graphId
+    }
+
+    static async CreateUserGraph(): Promise<string | Error> {
+
+        const headers = this.setAuthHeaders();
+
+        //TODO: name надо передавать в аргементе
+        const response = await axios.post<CreateUserGraphResponse>(`${API_URL}graph/userGraph`, { name: "Test Graph" }, { headers });
+
+        localStorage.setItem("graphId", response.data.graphId);
+
+        if (response.data.graphId == null) {
+            return Error("graphId is null")
+        }
+
+        return response.data.graphId
     }
 }

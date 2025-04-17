@@ -50,7 +50,7 @@ export class ContactService {
 
             const response = await axios.post<AddContactNodeResponse>(`${API_URL}contact/`, addContact, { headers });
 
-            info(response)
+            info("Add Contact\n", response)
 
             return response.data
         } catch (error) {

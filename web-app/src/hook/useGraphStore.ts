@@ -47,6 +47,10 @@ export const useGraphStore = () => {
       
       setGraph(newGraph);
     } catch (err) {
+      if ((err as Error).message.includes("")) {
+        await GraphService.CreateUserGraph()
+        return
+      }
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
