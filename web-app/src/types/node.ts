@@ -10,17 +10,15 @@ export interface Node {
 }
 
 export interface AddContactNode {
-  graphId: string
-  node: {
-    label: string,
-    x: number,
-    y: number,
-    color: string,
-    size: number,
-    type: string,
-    isSpecial: boolean,
-    parentId: string
-  }
+  label: string,
+  x: number,
+  y: number,
+  color: string,
+  size: number,
+  type: string,
+  isSpecial: boolean,
+  parentId: string
+
 }
 
 export interface NodeChange {

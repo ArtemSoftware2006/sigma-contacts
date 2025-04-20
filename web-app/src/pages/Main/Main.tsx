@@ -53,7 +53,7 @@ const Main: FC = () => {
     if (graphId == typeof (Error)) {
       info(graphId.toString())
       return
-    } 
+    }
 
     const resposne = await NodeService.ChangeNode(graphId as string, nodeChange)
     setGraphVersion(graphVersion + 1)
@@ -78,7 +78,7 @@ const Main: FC = () => {
     if (graphId == typeof (Error)) {
       info(graphId.toString())
       return
-    } 
+    }
 
     const contactDeleted: DeleteContactRequest = {
       graphId: graphId as string,
@@ -111,30 +111,27 @@ const Main: FC = () => {
     if (graphId == typeof (Error)) {
       info(graphId.toString())
       return
-    } 
+    }
 
     const addContactRequest: AddContactRequest = {
+      graphId: `${graphId as string}`,
       node: {
-        graphId: `${graphId as string}`,
-        node: {
-          label: nodeData.label,
-          x: Math.floor(Math.random() * 7) - 3,
-          y: Math.floor(Math.random() * 7) - 3,
-          size: nodeData.size,
-          type: "circle",
-          color: nodeData.color,
-          isSpecial: false,
-          parentId: parentNodeId
-        }
+        label: nodeData.label,
+        x: Math.floor(Math.random() * 7) - 3,
+        y: Math.floor(Math.random() * 7) - 3,
+        size: nodeData.size,
+        type: "circle",
+        color: nodeData.color,
+        isSpecial: false,
+        parentId: parentNodeId
       },
       edge: {
-        graphId: `${graphId as string}`,
-        edge: {
-          source: parentNodeId,
-          label: "TEST",
-          color: nodeData.color,
-          size: 1,
-        }
+
+        source: parentNodeId,
+        label: "TEST",
+        color: nodeData.color,
+        size: 1,
+
       }
     }
 

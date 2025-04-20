@@ -12,6 +12,7 @@ export interface AddContactNodeResponse {
 }
 
 export interface AddContactRequest {
+    graphId: string
     node: AddContactNode
     edge: AddContactEdge
 }

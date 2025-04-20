@@ -9,11 +9,8 @@ export interface Edge {
 }
 
 export interface AddContactEdge {
-  graphId: string
-  edge: {
-      source: string,
-      label: string,
-      color: string,
-      size: number,
-  }
+  source: string,
+  label: string,
+  color: string,
+  size: number,
 }
