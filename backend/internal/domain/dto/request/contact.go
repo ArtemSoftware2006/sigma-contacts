@@ -1,18 +1,24 @@
 package dto_request
 
 type AddContactRequest struct {
-	Node AddNodeRequest `json:"node"`
-	Edge AddEdgeRequest `json:"edge"`
+	Surname       string `json:"surname"`
+	Name          string `json:"name"`
+	Phone         string `json:"phone"`
+	VkId          string `json:"vkId"`
+	TelegramId    string `json:"telegramId"`
+	WhatsAppPhone string `json:"whatsAppPhone"`
+	Github        string `json:"github"`
+	Comment       string `json:"comment"`
 }
 
 type ChangeContactRequest struct {
-	GraphId string            `json:"graphId"`
-	Node    ChangeNodeRequest `json:"node"`
-	Edge    ChangeEdgeRequest `json:"edge"`
-}
-
-type DeleteContactRequest struct {
-	GraphId string `json:"graphId"`
-	NodeId  string `json:"nodeId"`
-	EdgeId  string `json:"edgeId"`
+	Id            string `json:"contactId"`
+	Surname       string `json:"surname"`
+	Name          string `json:"name"`
+	Phone         string `json:"phone"`
+	VkId          string `json:"vkId"`
+	TelegramId    string `json:"telegramId"`
+	WhatsAppPhone string `json:"whatsAppPhone"`
+	Github        string `json:"github"`
+	Comment       string `json:"comment"`
 }

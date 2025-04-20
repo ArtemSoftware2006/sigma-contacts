@@ -86,18 +86,15 @@ func (gs *GraphService) CreateUserGraph(req *dto_request.CreateGraphRequest) (*d
 	}
 
 	//TODO: Инициазизацию начального узла (Или нескольких узлов и ребер) надо вынести в отдельную функцию/структуру
-	_, err = gs.NodeRepository.Add(&dto_request.AddNodeRequest{
-		GraphId: response.GraphId,
-		Node: dto_request.AddNodeDto{
-			Label:     "Root",
-			X:         0,
-			Y:         0,
-			Size:      10,
-			Color:     "#FF5733",
-			Type:      "circle",
-			IsSpecial: true,
-			ParentID:  "",
-		},
+	_, err = gs.NodeRepository.Add(response.GraphId, &dto_request.AddNodeRequest{
+		Label:     "Root",
+		X:         0,
+		Y:         0,
+		Size:      10,
+		Color:     "#FF5733",
+		Type:      "circle",
+		IsSpecial: true,
+		ParentID:  "",
 	})
 
 	if err != nil {
@@ -109,5 +106,5 @@ func (gs *GraphService) CreateUserGraph(req *dto_request.CreateGraphRequest) (*d
 }
 
 func (gs *GraphService) CheckGraphForUser(userId string, graph *dto_response.GetGraphResponse) bool {
-	return graph.UserID == userId
+	return graph.UserId == userId
 }

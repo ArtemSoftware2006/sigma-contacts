@@ -1,15 +1,10 @@
 package dto_response
 
 type AddContactResponse struct {
-	Node AddNodeResponse `json:"node"`
-	Edge AddEdgeResponse `json:"edge"`
 	BaseResponse
+	Id string `json:"contactId"`
 }
 
 type ChangeContactResponse struct {
-	BaseResponse
-}
-
-type DeleteContactResponse struct {
 	BaseResponse
 }

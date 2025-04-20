@@ -5,7 +5,7 @@ type CreateGraphRequest struct {
 	Name   string `json:"name"`
 }
 type GetGraphRequest struct {
-	ID string `bson:"_id,omitempty"` // ID графа (Mongo автоматически генерирует)
+	Id string `bson:"_id,omitempty"` // ID графа (Mongo автоматически генерирует)
 }
 
 type GetUserGraphRequest struct {

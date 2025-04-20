@@ -49,7 +49,7 @@ func Run() {
 	var NodeService *service.NodeService = service.NewNodeService(NodeRepository, &config)
 	var AuthService service.AuthService = *service.NewAuthService(UserRepository, &config)
 	var GraphService *service.GraphService = service.NewGraphService(GraphRepository, UserRepository, NodeRepository)
-	var ContactService *service.ContactService = service.NewContactService(NodeRepository, EdgeRepository, GraphRepository, &config)
+	var ContactService *service.ContactFullDataService = service.NewContactService(NodeRepository, EdgeRepository, GraphRepository, &config)
 
 	//Controllers
 	var UserController *controller.UserController = controller.NewUserController(&UserService)

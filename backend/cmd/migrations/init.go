@@ -79,7 +79,7 @@ func main() {
 				Size:     10,
 				Color:    "#33FF57",
 				Type:     "circle",
-				ParentID: "n1",
+				ParentId: "n1",
 			},
 			{
 				ID:       "n3",
@@ -89,7 +89,7 @@ func main() {
 				Size:     10,
 				Color:    "#33FF57",
 				Type:     "circle",
-				ParentID: "n1",
+				ParentId: "n1",
 			},
 			{
 				ID:       "n4",
@@ -99,7 +99,7 @@ func main() {
 				Size:     8,
 				Color:    "#F033FF",
 				Type:     "circle",
-				ParentID: "n2",
+				ParentId: "n2",
 			},
 		},
 		Edges: []entities.Edge{

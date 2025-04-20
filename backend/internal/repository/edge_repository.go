@@ -29,14 +29,14 @@ func NewEdgeRepository(client *mongo.Client, dbName string, dbTimeout int) *Edge
 	}
 }
 
-func (er *EdgeRepository) Add(targetNodeId string, req *dto_request.AddEdgeRequest) (*dto_response.AddEdgeResponse, error) {
+func (er *EdgeRepository) Add(graphId string, targetNodeId string, req *dto_request.AddEdgeRequest) (*dto_response.AddEdgeResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), er.dbTimeout)
 	defer cancel()
 
 	collection := er.db.Collection("graphs")
 
 	// Создаем фильтр для поиска документа, который нужно обновить
-	objectID, err := primitive.ObjectIDFromHex(req.GraphId)
+	objectID, err := primitive.ObjectIDFromHex(graphId)
 	if err != nil {
 		return nil, fmt.Errorf("неверный формат GraphId: %v", err)
 	}
@@ -49,11 +49,11 @@ func (er *EdgeRepository) Add(targetNodeId string, req *dto_request.AddEdgeReque
 	// Создаем новый узел с сгенерированным ID
 	newEdge := bson.M{
 		"edgeId": newEdgeID,
-		"label":  req.Edge.Label,  // предполагается, что label приходит в запросе
-		"source": req.Edge.Source, // Откуда
-		"target": targetNodeId,    // Куда
-		"size":   req.Edge.Size,   // размер узла
-		"color":  req.Edge.Color,  // цвет
+		"label":  req.Label,    // предполагается, что label приходит в запросе
+		"source": req.Source,   // Откуда
+		"target": targetNodeId, // Куда
+		"size":   req.Size,     // размер узла
+		"color":  req.Color,    // цвет
 
 	}
 

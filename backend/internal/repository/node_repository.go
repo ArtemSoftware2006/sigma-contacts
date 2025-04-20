@@ -29,44 +29,40 @@ func NewNodeRepository(client *mongo.Client, dbName string, dbTimeout int) *Node
 	}
 }
 
-func (nr *NodeRepository) Add(req *dto_request.AddNodeRequest) (*dto_response.AddNodeResponse, error) {
+func (nr *NodeRepository) Add(grapgId string, req *dto_request.AddNodeRequest) (*dto_response.AddNodeResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), nr.dbTimeout)
 	defer cancel()
 
 	collection := nr.db.Collection("graphs")
 
-	// Создаем фильтр для поиска документа, который нужно обновить
-	objectID, err := primitive.ObjectIDFromHex(req.GraphId)
+	objectID, err := primitive.ObjectIDFromHex(grapgId)
 	if err != nil {
+		log.Println("NodeRepository, GraphId is " + grapgId)
 		return nil, fmt.Errorf("неверный формат GraphId: %v", err)
 	}
 
-	// Теперь фильтр будет работать
 	filter := bson.M{"_id": objectID}
 
-	newNodeID := "n" + uuid.New().String()[:4] // Пример: "n1a2b3c4"
+	newNodeID := "n" + uuid.New().String()[:4]
 
-	// Создаем новый узел с сгенерированным ID
 	newNode := bson.M{
 		"id":        newNodeID,
-		"label":     req.Node.Label,     // предполагается, что label приходит в запросе
-		"x":         req.Node.X,         // координата X
-		"y":         req.Node.Y,         // координата Y
-		"size":      req.Node.Size,      // размер узла
-		"color":     req.Node.Color,     // цвет
-		"type":      req.Node.Type,      // тип (например, "circle")
-		"isSpecial": req.Node.IsSpecial, // флаг
-		"parentId":  req.Node.ParentID,  // ID родителя (если есть)
+		"label":     req.Label,     // предполагается, что label приходит в запросе
+		"x":         req.X,         // координата X
+		"y":         req.Y,         // координата Y
+		"size":      req.Size,      // размер узла
+		"color":     req.Color,     // цвет
+		"type":      req.Type,      // тип (например, "circle")
+		"isSpecial": req.IsSpecial, // флаг
+		"parentId":  req.ParentID,  // ID родителя (если есть)
 	}
 
-	// Создаем обновление - добавляем новый узел в массив nodes
 	update := bson.M{
 		"$push": bson.M{
-			"nodes": newNode, // Предполагается, что в req есть Node - новый узел
+			"nodes": newNode,
 		},
 	}
 
-	// Выполняем обновление
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		log.Error("Ошибка обновления документа:", err)

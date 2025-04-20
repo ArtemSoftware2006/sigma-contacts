@@ -9,17 +9,17 @@ import (
 )
 
 type ContactController struct {
-	ContactService service_interface.ContactService
+	ContactService service_interface.ContactFullDataService
 }
 
-func NewContactController(ContactService service_interface.ContactService) *ContactController {
+func NewContactController(ContactService service_interface.ContactFullDataService) *ContactController {
 	return &ContactController{
 		ContactService: ContactService,
 	}
 }
 
 func (c *ContactController) Add(ctx *gin.Context) {
-	var req dto_request.AddContactRequest
+	var req dto_request.AddContactFullDataRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -35,7 +35,7 @@ func (c *ContactController) Add(ctx *gin.Context) {
 }
 
 func (c *ContactController) Change(ctx *gin.Context) {
-	var req dto_request.ChangeContactRequest
+	var req dto_request.ChangeContactFullDataRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -51,7 +51,7 @@ func (c *ContactController) Change(ctx *gin.Context) {
 }
 
 func (c *ContactController) Delete(ctx *gin.Context) {
-	var req dto_request.DeleteContactRequest
+	var req dto_request.DeleteContactFullDataRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

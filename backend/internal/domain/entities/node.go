@@ -10,5 +10,7 @@ type Node struct {
 	Type      string   `json:"type" bson:"type"`           // Тип узла (например, "circle")
 	IsSpecial bool     `json:"isSpecial" bson:"isSpecial"` // Является ли узел особенным
 	Children  []string `json:"children" bson:"children"`   // Дочерние узлы (если это особенный узел)
-	ParentID  string   `json:"parentId" bson:"parentId"`   // ID родительского узла (если это дочерний)
+	ParentId  string   `json:"parentId" bson:"parentId"`   // ID родительского узла (если это дочерний)
+	Contact   Contact  `json:"contact" bson:"contact"`
+	Comment   string   `json:"comment" bson:"comment"`
 }

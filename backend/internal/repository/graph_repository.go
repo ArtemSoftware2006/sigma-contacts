@@ -36,7 +36,7 @@ func (gr *GraphRepository) Create(req *dto_request.CreateGraphRequest) (*dto_res
 	collection := gr.db.Collection("graphs")
 
 	graph := entities.Graph{
-		UserID:    req.UserId,
+		UserId:    req.UserId,
 		Name:      req.Name,
 		CreatedAt: time.Now(),
 		Nodes:     []entities.Node{},
@@ -63,7 +63,7 @@ func (gr *GraphRepository) Get(graph *dto_request.GetGraphRequest) (*dto_respons
 	ctx, cancel := context.WithTimeout(context.Background(), gr.dbTimeout)
 	defer cancel()
 
-	objectID, err := primitive.ObjectIDFromHex(graph.ID)
+	objectID, err := primitive.ObjectIDFromHex(graph.Id)
 	if err != nil {
 		log.Error("Ошибка преобразования _id. ", err)
 		return nil, err

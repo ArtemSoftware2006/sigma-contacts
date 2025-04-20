@@ -12,8 +12,8 @@ type CreateGraphResponse struct {
 
 type GetGraphResponse struct {
 	BaseResponse
-	ID        string          `json:"id" bson:"_id,omitempty"`    // ID графа (Mongo автоматически генерирует)
-	UserID    string          `json:"userId" bson:"userId"`       // ID пользователя, которому принадлежит граф
+	Id        string          `json:"id" bson:"_id,omitempty"`    // ID графа (Mongo автоматически генерирует)
+	UserId    string          `json:"userId" bson:"userId"`       // ID пользователя, которому принадлежит граф
 	Name      string          `json:"name" bson:"name"`           // Название графа
 	CreatedAt time.Time       `json:"createdAt" bson:"createdAt"` // Дата создания графа
 	Nodes     []entities.Node `json:"nodes" bson:"nodes"`         // Массив узлов графа

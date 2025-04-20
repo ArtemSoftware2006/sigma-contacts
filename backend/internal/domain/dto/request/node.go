@@ -1,6 +1,6 @@
 package dto_request
 
-type AddNodeDto struct {
+type AddNodeRequest struct {
 	Label     string  `bson:"label" json:"label"`
 	X         float64 `bson:"x" json:"x"`
 	Y         float64 `bson:"y" json:"y"`
@@ -10,10 +10,6 @@ type AddNodeDto struct {
 	IsSpecial bool    `bson:"isSpecial" json:"isSpecial"`
 	// Children  []string `bson:"children,omitempty" json:"children,omitempty"`
 	ParentID string `bson:"parentId" json:"parentId"`
-}
-type AddNodeRequest struct {
-	GraphId string     `json:"graphId"`
-	Node    AddNodeDto `json:"node"`
 }
 
 type ChangeNodeRequest struct {

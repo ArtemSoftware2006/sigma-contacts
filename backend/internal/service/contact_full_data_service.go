@@ -10,39 +10,43 @@ import (
 	repository_interface "sigma-contacts/internal/domain/interface/repository"
 )
 
-type ContactService struct {
-	nodeRepo  repository_interface.NodeRepository
-	edgeRepo  repository_interface.EdgeRepository
-	graphRepo repository_interface.GraphRepository
-	config    *config.AppConfig
+type ContactFullDataService struct {
+	nodeRepository    repository_interface.NodeRepository
+	edgeRepository    repository_interface.EdgeRepository
+	graphRepository   repository_interface.GraphRepository
+	contactRepository repository_interface.ContactRepository
+	config            *config.AppConfig
 }
 
-func NewContactService(nodeRepo repository_interface.NodeRepository, edgeRepo repository_interface.EdgeRepository,
-	graphRepo repository_interface.GraphRepository, config *config.AppConfig) *ContactService {
-	return &ContactService{
-		nodeRepo:  nodeRepo,
-		edgeRepo:  edgeRepo,
-		graphRepo: graphRepo,
-		config:    config,
+func NewContactService(nodeRepository repository_interface.NodeRepository, edgeRepository repository_interface.EdgeRepository,
+	graphRepository repository_interface.GraphRepository,
+	//contactRepository repository_interface.ContactRepository,
+	config *config.AppConfig) *ContactFullDataService {
+	return &ContactFullDataService{
+		nodeRepository:  nodeRepository,
+		edgeRepository:  edgeRepository,
+		graphRepository: graphRepository,
+		//contactRepository: contactRepository,
+		config: config,
 	}
 }
 
-func (cs *ContactService) Add(req *dto_request.AddContactRequest) (*dto_response.AddContactResponse, error) {
-	nodeResp, err := cs.nodeRepo.Add(&req.Node)
+func (cs *ContactFullDataService) Add(req *dto_request.AddContactFullDataRequest) (*dto_response.AddContactFullDataResponse, error) {
+	nodeResponse, err := cs.nodeRepository.Add(req.GraphId, &req.Node)
 	if err != nil {
 		log.Println("ContactService: error adding node", err)
 		return nil, err
 	}
 
-	edgeNode, err := cs.edgeRepo.Add(nodeResp.IdNode, &req.Edge)
+	edgeNode, err := cs.edgeRepository.Add(req.GraphId, nodeResponse.IdNode, &req.Edge)
 	if err != nil {
 		log.Println("ContactService: error adding edge", err)
 		return nil, err
 	}
 
-	return &dto_response.AddContactResponse{
+	return &dto_response.AddContactFullDataResponse{
 		Node: dto_response.AddNodeResponse{
-			IdNode: nodeResp.IdNode,
+			IdNode: nodeResponse.IdNode,
 		},
 		Edge: dto_response.AddEdgeResponse{
 			IdEdge: edgeNode.IdEdge,
@@ -54,20 +58,20 @@ func (cs *ContactService) Add(req *dto_request.AddContactRequest) (*dto_response
 	}, nil
 }
 
-func (cs *ContactService) Change(req *dto_request.ChangeContactRequest) (*dto_response.ChangeContactResponse, error) {
-	_, err := cs.nodeRepo.Change(req.GraphId, &req.Node)
+func (cs *ContactFullDataService) Change(req *dto_request.ChangeContactFullDataRequest) (*dto_response.ChangeContactFullDataResponse, error) {
+	_, err := cs.nodeRepository.Change(req.GraphId, &req.Node)
 	if err != nil {
 		log.Println("ContactService: error changing node", err)
 		return nil, err
 	}
 
-	_, err = cs.edgeRepo.Change(req.GraphId, &req.Edge)
+	_, err = cs.edgeRepository.Change(req.GraphId, &req.Edge)
 	if err != nil {
 		log.Println("ContactService: error changing edge", err)
 		return nil, err
 	}
 
-	return &dto_response.ChangeContactResponse{
+	return &dto_response.ChangeContactFullDataResponse{
 		BaseResponse: dto_response.BaseResponse{
 			Status:  200,
 			Message: "Ok",
@@ -75,11 +79,11 @@ func (cs *ContactService) Change(req *dto_request.ChangeContactRequest) (*dto_re
 	}, nil
 }
 
-func (cs *ContactService) Delete(req *dto_request.DeleteContactRequest) (*dto_response.DeleteContactResponse, error) {
+func (cs *ContactFullDataService) Delete(req *dto_request.DeleteContactFullDataRequest) (*dto_response.DeleteContactFullDataResponse, error) {
 
 	//TODO: GetPraphResponse должен состоять из graph: entities.Graph и BaseReponse (а сейчас все поля для Graph перечислены вручную)
-	graph, err := cs.graphRepo.Get(&dto_request.GetGraphRequest{
-		ID: req.GraphId,
+	graph, err := cs.graphRepository.Get(&dto_request.GetGraphRequest{
+		Id: req.GraphId,
 	})
 	if err != nil {
 		return nil, err
@@ -110,19 +114,19 @@ func (cs *ContactService) Delete(req *dto_request.DeleteContactRequest) (*dto_re
 
 	// ----------- Вот это все в гуарды
 
-	err = cs.nodeRepo.Delete(req.GraphId, req.NodeId)
+	err = cs.nodeRepository.Delete(req.GraphId, req.NodeId)
 	if err != nil {
 		log.Println("ContactService: error deleting node", err)
 		return nil, err
 	}
 
-	err = cs.edgeRepo.Delete(req.GraphId, req.EdgeId)
+	err = cs.edgeRepository.Delete(req.GraphId, req.EdgeId)
 	if err != nil {
 		log.Println("ContactService: error deleting edge", err)
 		return nil, err
 	}
 
-	return &dto_response.DeleteContactResponse{
+	return &dto_response.DeleteContactFullDataResponse{
 		BaseResponse: dto_response.BaseResponse{
 			Status:  200,
 			Message: "Ok",
@@ -131,7 +135,7 @@ func (cs *ContactService) Delete(req *dto_request.DeleteContactRequest) (*dto_re
 }
 
 // TODO: Вынести в отдельный класс гуарда или бизнес логики
-func (cs *ContactService) isHaveChildren(nodeId string, edges []entities.Edge) bool {
+func (cs *ContactFullDataService) isHaveChildren(nodeId string, edges []entities.Edge) bool {
 	countChildren := 0
 
 	for i := 0; i < len(edges); i++ {
@@ -143,7 +147,7 @@ func (cs *ContactService) isHaveChildren(nodeId string, edges []entities.Edge) b
 	return countChildren >= 1
 }
 
-func (cs *ContactService) isHaveNode(nodeId string, graph *entities.Graph) bool {
+func (cs *ContactFullDataService) isHaveNode(nodeId string, graph *entities.Graph) bool {
 	countNodes := 0
 	for i := 0; i < len(graph.Nodes); i++ {
 		if graph.Nodes[i].ID == nodeId {
@@ -154,7 +158,7 @@ func (cs *ContactService) isHaveNode(nodeId string, graph *entities.Graph) bool 
 	return countNodes == 1
 }
 
-func (cs *ContactService) isHaveEdge(edgeId string, graph *entities.Graph) bool {
+func (cs *ContactFullDataService) isHaveEdge(edgeId string, graph *entities.Graph) bool {
 	countEdges := 0
 	for i := 0; i < len(graph.Edges); i++ {
 		if graph.Edges[i].ID == edgeId {
@@ -165,7 +169,7 @@ func (cs *ContactService) isHaveEdge(edgeId string, graph *entities.Graph) bool 
 	return countEdges == 1
 }
 
-func (cs *ContactService) isEdgeForThisNode(edgeId, nodeId string, graph *entities.Graph) bool {
+func (cs *ContactFullDataService) isEdgeForThisNode(edgeId, nodeId string, graph *entities.Graph) bool {
 	countEdges := 0
 	for i := 0; i < len(graph.Edges); i++ {
 		if graph.Edges[i].ID == edgeId && graph.Edges[i].Target == nodeId {

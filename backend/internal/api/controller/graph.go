@@ -41,7 +41,7 @@ func (gc *GraphController) Get(ctx *gin.Context) {
 	userId := ctx.Value("userId").(string)
 
 	id := ctx.Param("id")
-	req := dto_request.GetGraphRequest{ID: id}
+	req := dto_request.GetGraphRequest{Id: id}
 
 	resp, err := gc.GraphService.Get(userId, &req)
 	if err != nil {
