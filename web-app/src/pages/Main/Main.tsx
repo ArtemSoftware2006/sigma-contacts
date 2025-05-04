@@ -11,11 +11,11 @@ import { SettingsIcon, CloseIcon } from '@chakra-ui/icons';
 import SettingsPanel from '../../components/settingPanel/SettingsPanel';
 import { Node, NodeChange } from '../../types/node'
 import { useGraphStore } from '../../hook/useGraphStore';
-import { AddContactRequest, DeleteContactRequest } from '../../types/contact';
+import { AddContactFullDataRequest, DeleteContactFullDataRequest } from '../../types/contactFullData';
 import { info } from '../../utils/logger'
 import { SettingPanelState } from '../../enums/settingPanelMode';
 import { NodeService } from '../../service/nodeService';
-import { ContactService } from '../../service/contactService';
+import { ContactFullDataService } from '../../service/contactFullDataService';
 import { GraphService } from '../../service/graphService';
 
 const Main: FC = () => {
@@ -24,12 +24,8 @@ const Main: FC = () => {
   const [parentNodeId, setParentNodeId] = useState<string | null>(null)
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
 
-  const { graph, loading, error, refresh, setGraph } = useGraphStore();
+  const { graph, vitrualGraph, refresh, setGraph } = useGraphStore();
   const [graphVersion, setGraphVersion] = useState(0);
-
-  const settingNodeText = "Настройка узла"
-  const addNodeText = "Добавление узла"
-  const [titleSettingsPanel, setTitleSettingsPanel] = useState(settingNodeText);
 
   const toggleSettings = () => setSettingsOpen(!isSettingsOpen);
 
@@ -45,6 +41,7 @@ const Main: FC = () => {
       type: editNode.type || 'circle',
       size: editNode.size,
       parentId: editNode.parentId,
+      contact: editNode.contact,
       isSpecial: false,
       children: []
     }
@@ -80,7 +77,7 @@ const Main: FC = () => {
       return
     }
 
-    const contactDeleted: DeleteContactRequest = {
+    const contactDeleted: DeleteContactFullDataRequest = {
       graphId: graphId as string,
       nodeId: deletedNode.id,
       edgeId: edgeId!
@@ -88,7 +85,7 @@ const Main: FC = () => {
 
     info(contactDeleted)
 
-    const resposne = await ContactService.DeleteContact(contactDeleted)
+    const resposne = await ContactFullDataService.DeleteContact(contactDeleted)
     setGraphVersion(graphVersion + 1)
 
     info(resposne)
@@ -113,7 +110,7 @@ const Main: FC = () => {
       return
     }
 
-    const addContactRequest: AddContactRequest = {
+    const addContactRequest: AddContactFullDataRequest = {
       graphId: `${graphId as string}`,
       node: {
         label: nodeData.label,
@@ -122,20 +119,19 @@ const Main: FC = () => {
         size: nodeData.size,
         type: "circle",
         color: nodeData.color,
+        contact: nodeData.contact,
         isSpecial: false,
         parentId: parentNodeId
       },
       edge: {
-
         source: parentNodeId,
-        label: "TEST",
+        label: "",
         color: nodeData.color,
         size: 1,
-
       }
     }
 
-    const response = await ContactService.AddContact(addContactRequest)
+    const response = await ContactFullDataService.AddContact(addContactRequest)
     setGraphVersion(graphVersion + 1)
 
     refresh()
@@ -151,7 +147,6 @@ const Main: FC = () => {
               setSettingsOpen(true)
               setSettingPanelState(SettingPanelState.View)
               info(settingPanelState)
-              setTitleSettingsPanel(settingNodeText)
               setSelectedNode(nodeData)
               info(nodeData)
             }}
@@ -160,14 +155,12 @@ const Main: FC = () => {
               info(settingPanelState)
               setParentNodeId(parentNodeId)
               setSettingsOpen(true)
-              setTitleSettingsPanel(addNodeText)
             }}
           />
         </MainArea>
 
         {isSettingsOpen && (
           <SettingsPanel
-            title={titleSettingsPanel}
             node={selectedNode}
             settingPanelState={settingPanelState}
             onStateChange={setSettingPanelState}

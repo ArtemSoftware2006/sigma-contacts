@@ -4,8 +4,9 @@ import { SigmaContainerProps } from '../../types/sigma';
 import { NodeChange } from '../../types/node';
 import { NodeService } from '../../service/nodeService';
 import { GraphService } from '../../service/graphService';
-import { inflate } from 'zlib';
+import { useGraphStore } from '../../hook/useGraphStore';
 import { info } from '../../utils/logger';
+import { newEmptyContact } from '../../types/contact';
 
 const SigmaContainer: React.FC<SigmaContainerProps> = ({
   graph,
@@ -17,6 +18,7 @@ const SigmaContainer: React.FC<SigmaContainerProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const sigmaInstance = useRef<Sigma | null>(null);
   const draggedNode = useRef<string | null>(null);
+  const { vitrualGraph, refresh, setGraph } = useGraphStore();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -47,6 +49,8 @@ const SigmaContainer: React.FC<SigmaContainerProps> = ({
       const nodeId = draggedNode.current;
       const nodeAttrs = graph.getNodeAttributes(nodeId);
 
+      info("Vitrual Graph\n", vitrualGraph)
+
       const nodeChange: NodeChange = {
         id: nodeId,
         label: nodeAttrs.label,
@@ -55,6 +59,7 @@ const SigmaContainer: React.FC<SigmaContainerProps> = ({
         size: nodeAttrs.size,
         color: nodeAttrs.color,
         type: nodeAttrs.type,
+        contact: vitrualGraph?.nodes.find(node => node.id == nodeId)?.contact || newEmptyContact(),
         isSpecial: nodeAttrs.isSpecial || false,
         children: nodeAttrs.children || [],
         parentId: nodeAttrs.parentId || ''

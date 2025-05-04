@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import Sigma from 'sigma';
 import SigmaContainer from '../sigmaContainer/SigmaContainer';
-import { Node as MyNode } from '../../types/node';
+import { Node  } from '../../types/node';
 import { NodeContextMenu } from '../nodeContextMenu/NodeContextMenu';
 import { useGraphStore } from '../../hook/useGraphStore';
 import { info } from '../../utils/logger'
 import './Graph.css';
+import { newEmptyContact } from '../../types/contact';
 
 interface GraphComponentProps {
-  onNodeClick?: (nodeData: MyNode) => void;
+  onNodeClick?: (nodeData: Node) => void;
   onAddNode?: (parentNodeId: string) => void; 
 }
 
 const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick, onAddNode }) => {
   // Используем наш хук для управления состоянием графа
-  const { graph, loading, error, refresh, setGraph } = useGraphStore();
+  const { graph, vitrualGraph ,loading, error, refresh, setGraph } = useGraphStore();
 
   //refresh()
   
@@ -39,21 +40,24 @@ const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick, onAddNode 
       () => setInitialAnimationDone(true));
     }
 
-    sigma.on("clickNode", ({ node }) => {
-      const nodeAttributes = sigma.getGraph().getNodeAttributes(node);
-      info("Клик по узлу:", node, nodeAttributes);
+    sigma.on("clickNode", ({ node: nodeId }) => {
+      const nodeAttributes = sigma.getGraph().getNodeAttributes(nodeId);
+      info("Клик по узлу:", nodeId, nodeAttributes);
 
       if (onNodeClick) {
-        const resultNode: MyNode = {
+        const resultNode: Node = {
           label: nodeAttributes.label,
-          id: node,
+          id: nodeId,
           size: nodeAttributes.size,
           color: nodeAttributes.color,
           x: nodeAttributes.x,
           y: nodeAttributes.y,
           type: nodeAttributes.type,
-          parentId : nodeAttributes.parentId
+          parentId : nodeAttributes.parentId,
+          contact: vitrualGraph?.nodes.find(node => node.id == nodeId)?.contact || newEmptyContact()
         };
+        info("Click, virtualGraph\n")
+        info(vitrualGraph?.nodes)
         onNodeClick(resultNode);
       }
       setContextMenu({ show: false, x: 0, y: 0, nodeId: null });

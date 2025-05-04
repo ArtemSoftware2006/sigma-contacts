@@ -1,38 +1,43 @@
-import { AddContactEdge, Edge } from "./edge"
-import { AddContactNode, NodeChange } from "./node"
-import { BaseResponse } from "./response"
-
-export interface AddContactNodeResponse {
-    node: {
-        idNode: string
-    }
-    edge: {
-        idEdge: string
-    }
+export interface Contact {
+    contactId: string 
+	surname: string 
+	name: string 
+	phone: string 
+	vkId: string 
+	telegramId: string 
+	whatsAppPhone: string 
+	github: string 
+	comment: string 
 }
 
-export interface AddContactRequest {
-    graphId: string
-    node: AddContactNode
-    edge: AddContactEdge
-}
-export interface ChangeContactRequest {
-    graphId: string
-    node: NodeChange
-    edge: Edge
-}
+export const newEmptyContact = () : Contact => {
+	const emptyContact : Contact = {
+		contactId: "", 
+		surname: "", 
+		name: "", 
+		phone: "", 
+		vkId: "", 
+		telegramId: "", 
+		whatsAppPhone: "", 
+		github: "",
+		comment: "", 
+	}
 
-export interface DeleteContactRequest {
-    graphId: string
-    nodeId: string
-    edgeId: string
-}
-
-export interface DeleteContactResponse extends BaseResponse {
+	return emptyContact
 }
 
+export const newEmptyContactForGraph = () : Contact => {
+	const emptyContact : Contact = {
+		contactId: "TEST", 
+		surname: "TEST", 
+		name: "TEST", 
+		phone: "", 
+		vkId: "", 
+		telegramId: "", 
+		whatsAppPhone: "", 
+		github: "",
+		comment: "", 
+	}
 
-
-export interface ChangeContactResponse extends BaseResponse {
-
+	return emptyContact
 }

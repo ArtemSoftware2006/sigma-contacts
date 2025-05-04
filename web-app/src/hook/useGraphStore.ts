@@ -2,9 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import Graph from 'graphology';
 import { GraphService } from '../service/graphService';
 import { info } from '../utils/logger'
+import { GraphData } from '../types/graph';
 
 export const useGraphStore = () => {
   const [graph, setGraph] = useState<Graph | null>(null);
+  const [vitrualGraph, setVirtualGraph] = useState<GraphData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,24 +21,26 @@ export const useGraphStore = () => {
     setError(null);
     
     try {
-      const apiData = await GraphService.fetchGraphData();
+      const graphResponse : GraphData = await GraphService.fetchGraphData();
 
-      info("Load Graph")
-      info(apiData)
-      
+      info("Load Graph (apiData)\n" + graphResponse)
+      setVirtualGraph(graphResponse)
+      info("VirtualGraph\n" + vitrualGraph)
+
       const newGraph = new Graph();
-      apiData.nodes.forEach(node => {
+      graphResponse.nodes.forEach(node => {
+        //TODO: Добавление узла в граф Graphology. Тут нет поля Contact, поэтому создаю Виртуальный граф
         newGraph.addNode(node.id, {
           label: node.label,
           x: node.x,
           y: node.y,
           size: node.size,
           color: node.color,
-          type: node.type
+          type: node.type,
         });
       });
       
-      apiData.edges.forEach(edge => {
+      graphResponse.edges.forEach(edge => {
         newGraph.addEdgeWithKey(edge.edgeId, edge.source, edge.target, {
           id: edge.edgeId,
           label: edge.label,
@@ -65,6 +69,7 @@ export const useGraphStore = () => {
 
   return {
     graph,
+    vitrualGraph,
     loading,
     error,
     refresh: loadGraph,

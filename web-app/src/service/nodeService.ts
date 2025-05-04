@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { Edge } from "../types/edge";
 import { Node, NodeChange } from '../types/node'
-import { AddContactRequest, AddContactNodeResponse, ChangeContactRequest, ChangeContactResponse } from "../types/contact";
+import { AddContactFullDataRequest, AddContactNodeResponse, ChangeContactFullDataRequest, ChangeContactFullDataResponse } from "../types/contactFullData";
 import { info } from "../utils/logger";
 import { BaseResponse } from "../types/response";
 

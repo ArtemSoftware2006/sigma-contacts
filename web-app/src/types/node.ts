@@ -1,3 +1,5 @@
+import { Contact } from "./contact";
+
 export interface Node {
   id: string;
   label: string;
@@ -7,6 +9,7 @@ export interface Node {
   color: string;
   type: string;
   parentId: string
+  contact : Contact
 }
 
 export interface AddContactNode {
@@ -17,8 +20,8 @@ export interface AddContactNode {
   size: number,
   type: string,
   isSpecial: boolean,
-  parentId: string
-
+  parentId: string,
+  contact: Contact,
 }
 
 export interface NodeChange {
@@ -30,6 +33,7 @@ export interface NodeChange {
   color: string;
   type: string;
   isSpecial: boolean,
+  contact: Contact,
   children: string[],
   parentId: string
 }

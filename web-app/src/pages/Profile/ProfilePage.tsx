@@ -10,7 +10,8 @@ import {
   useToast,
   FormControl,
   FormLabel,
-  VStack
+  VStack,
+  Stack
 } from '@chakra-ui/react';
 import { useAuth } from '../../hook/useAuth';
 
@@ -24,10 +25,10 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState<Profile>({
     firstName: 'Иван',
     lastName: 'Иванов',
-    avatarUrl: 'https://bit.ly/dan-abramov' // Замените на реальную ссылку
+    avatarUrl: 'https://bit.ly/dan-abramov'
   });
   
-  const {logout} = useAuth()
+  const { logout } = useAuth();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const toast = useToast();
 
@@ -65,61 +66,62 @@ const ProfilePage = () => {
         
         {isEditing ? (
           <Box w="100%">
-            <FormControl mb={4}>
-              <FormLabel>Имя</FormLabel>
-              <Input
-                name="firstName"
-                value={profile.firstName}
-                onChange={handleInputChange}
-              />
-            </FormControl>
-            
-            <FormControl mb={6}>
-              <FormLabel>Фамилия</FormLabel>
-              <Input
-                name="lastName"
-                value={profile.lastName}
-                onChange={handleInputChange}
-              />
-            </FormControl>
-            
-            <Flex justify="space-between">
-              <Button 
-                colorScheme="blue" 
-                onClick={handleSave}
-              >
-                Сохранить
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => setIsEditing(false)}
-              >
-                Отмена
-              </Button>
-            </Flex>
+            <VStack spacing={4} align="center">
+              <FormControl>
+                <FormLabel>Имя</FormLabel>
+                <Input
+                  name="firstName"
+                  value={profile.firstName}
+                  onChange={handleInputChange}
+                />
+              </FormControl>
+              
+              <FormControl>
+                <FormLabel>Фамилия</FormLabel>
+                <Input
+                  name="lastName"
+                  value={profile.lastName}
+                  onChange={handleInputChange}
+                />
+              </FormControl>
+              
+              <Stack direction="column" spacing={4} mt={4}>
+                <Button 
+                  colorScheme="blue" 
+                  onClick={handleSave}
+                >
+                  Сохранить
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsEditing(false)}
+                >
+                  Отмена
+                </Button>
+              </Stack>
+            </VStack>
           </Box>
         ) : (
-          <Box textAlign="center">
+          <VStack spacing={6} align="center">
             <Text fontSize="2xl" fontWeight="bold">
               {profile.firstName} {profile.lastName}
             </Text>
             
-            <Button
-              mt={6}
-              colorScheme="blue"
-              onClick={() => setIsEditing(true)}
-            >
-              Редактировать профиль
-            </Button>
-            <br/>
-            <Button
-              mt={6}
-              colorScheme="blue"
-              onClick={() => logout()}
-            >
-              Выйти
-            </Button>
-          </Box>
+            <Stack direction="column" spacing={4} w="100%">
+              <Button
+                colorScheme="blue"
+                onClick={() => setIsEditing(true)}
+              >
+                Редактировать профиль
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => logout()}
+              >
+                Выйти
+              </Button>
+            </Stack>
+          </VStack>
         )}
       </VStack>
     </Box>
