@@ -3,12 +3,13 @@ package service
 import (
 	"context"
 	"errors"
-	"log"
 	"sigma-contacts/internal/config"
 	dto_request "sigma-contacts/internal/domain/dto/request"
 	dto_response "sigma-contacts/internal/domain/dto/response"
 	repository_interface "sigma-contacts/internal/domain/interface/repository"
 	"sigma-contacts/pkg/utils"
+
+	log "github.com/sirupsen/logrus"
 )
 
 //TODO: Добавить Auth и Refresh токены
@@ -47,7 +48,7 @@ func (as *AuthService) Register(ctx context.Context, req *dto_request.AuthReques
 	)
 
 	if err != nil {
-		log.Println("Error in creating user")
+		log.Error("Error in creating user")
 		return err
 	}
 

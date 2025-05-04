@@ -1,11 +1,12 @@
 package service
 
 import (
-	"log"
 	"sigma-contacts/internal/config"
 	dto_request "sigma-contacts/internal/domain/dto/request"
 	dto_response "sigma-contacts/internal/domain/dto/response"
 	repository_interface "sigma-contacts/internal/domain/interface/repository"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type NodeService struct {
@@ -22,15 +23,13 @@ func NewNodeService(nodeRepository repository_interface.NodeRepository, config *
 
 func (ns *NodeService) ChangeNode(graphid string, req *dto_request.ChangeNodeRequest) (*dto_response.ChangeNodeResponse, error) {
 	response, err := ns.NodeRepository.Change(graphid, req)
-	log.Println(response)
-	log.Println(err)
+	log.Info(&response)
+
 	if err != nil {
 		log.Println("NodeService, Error changing graph`s node")
 
 		return nil, err
 	}
-
-	log.Println("TEST")
 
 	return response, nil
 }

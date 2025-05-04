@@ -1,8 +1,9 @@
 package dto_response
 
 type AddContactFullDataResponse struct {
-	Node AddNodeResponse `json:"node"`
-	Edge AddEdgeResponse `json:"edge"`
+	Node    *AddNodeResponse    `json:"node"`
+	Edge    *AddEdgeResponse    `json:"edge"`
+	Contact *AddContactResponse `json:"contact"`
 	BaseResponse
 }
 

@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	dto_request "sigma-contacts/internal/domain/dto/request"
 	service_interface "sigma-contacts/internal/domain/interface/service"
@@ -26,7 +26,7 @@ func (uc *UserController) GetUser(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		log.Println("UserController Error: ", err)
+		log.Error("UserController Error: ", err)
 		return
 	}
 
@@ -45,7 +45,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		log.Println("UserController Error: ", err)
+		log.Error("UserController Error: ", err)
 		return
 	}
 

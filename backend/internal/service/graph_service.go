@@ -2,10 +2,11 @@ package service
 
 import (
 	"fmt"
-	"log"
 	dto_request "sigma-contacts/internal/domain/dto/request"
 	dto_response "sigma-contacts/internal/domain/dto/response"
 	repository_interface "sigma-contacts/internal/domain/interface/repository"
+
+	log "github.com/sirupsen/logrus"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -28,7 +29,7 @@ func NewGraphService(GraphRepository repository_interface.GraphRepository, UserR
 func (gs *GraphService) Create(req *dto_request.CreateGraphRequest) (*dto_response.CreateGraphResponse, error) {
 	response, err := gs.GraphRepository.Create(req)
 	if err != nil {
-		log.Println("GraphService, Error creating graph")
+		log.Error("GraphService, Error creating graph")
 
 		return nil, err
 	}
@@ -39,7 +40,7 @@ func (gs *GraphService) Create(req *dto_request.CreateGraphRequest) (*dto_respon
 func (gs *GraphService) Get(userId string, req *dto_request.GetGraphRequest) (*dto_response.GetGraphResponse, error) {
 	response, err := gs.GraphRepository.Get(req)
 	if err != nil {
-		log.Println("GraphService, Error getting graph")
+		log.Error("GraphService, Error getting graph")
 
 		return nil, err
 	}
@@ -54,7 +55,7 @@ func (gs *GraphService) Get(userId string, req *dto_request.GetGraphRequest) (*d
 func (gs *GraphService) GetUserGraph(req *dto_request.GetUserGraphRequest) (*dto_response.GetGraphResponse, error) {
 	response, err := gs.GraphRepository.GetUserGraph(req)
 	if err != nil {
-		log.Println("GraphService, Error getting graph by userId")
+		log.Error("GraphService, Error getting graph by userId")
 
 		return nil, err
 	}
@@ -75,13 +76,13 @@ func (gs *GraphService) CreateUserGraph(req *dto_request.CreateGraphRequest) (*d
 	if graph != nil {
 		return nil, fmt.Errorf("у пользователя уже создан граф")
 	} else if err != mongo.ErrNoDocuments {
-		log.Println("GraphService: func CreateUserGraph - ", err.Error())
+		log.Error("GraphService: func CreateUserGraph - ", err.Error())
 		return nil, err
 	}
 
 	response, err := gs.GraphRepository.Create(req)
 	if err != nil {
-		log.Println("GraphService, Error getting graph by userId")
+		log.Error("GraphService, Error getting graph by userId")
 		return nil, err
 	}
 

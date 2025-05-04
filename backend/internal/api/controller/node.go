@@ -1,10 +1,11 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 	dto_request "sigma-contacts/internal/domain/dto/request"
 	service_interface "sigma-contacts/internal/domain/interface/service"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,7 +38,7 @@ func (nc *NodeController) Change(ctx *gin.Context) {
 
 	resp, err := nc.NodeService.ChangeNode(graphId, &req)
 	if err != nil {
-		log.Println("Error NodeController in changing node: ", err)
+		log.Error("Error NodeController in changing node: ", err)
 		ctx.JSON(http.StatusInternalServerError, resp)
 	}
 

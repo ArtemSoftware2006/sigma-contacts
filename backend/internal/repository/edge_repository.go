@@ -78,7 +78,7 @@ func (er *EdgeRepository) Add(graphId string, targetNodeId string, req *dto_requ
 	log.Info("Обновлено документов:", result.ModifiedCount)
 
 	// Возвращаем ответ, возможно с ID нового узла
-	return &dto_response.AddEdgeResponse{IdEdge: newEdgeID}, nil
+	return &dto_response.AddEdgeResponse{EdgeId: newEdgeID}, nil
 }
 
 func (er *EdgeRepository) Change(graphId string, req *dto_request.ChangeEdgeRequest) (*dto_response.ChangeEdgeResponse, error) {

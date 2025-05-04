@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"sigma-contacts/internal/domain/entities"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -43,7 +44,7 @@ func main() {
 		log.Fatal("Ошибка пинга MongoDB:", err)
 	}
 
-	log.Println("Успешное подключение к MongoDB")
+	log.Info("Успешное подключение к MongoDB")
 
 	type MigrationGraph struct {
 		ID        primitive.ObjectID `bson:"_id,omitempty"` // ID графа (Mongo автоматически генерирует)

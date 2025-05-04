@@ -6,6 +6,7 @@ import (
 	"sigma-contacts/internal/config"
 	dto_request "sigma-contacts/internal/domain/dto/request"
 	dto_response "sigma-contacts/internal/domain/dto/response"
+	"sigma-contacts/internal/domain/entities"
 	"time"
 
 	"github.com/google/uuid"
@@ -29,22 +30,21 @@ func NewNodeRepository(client *mongo.Client, dbName string, dbTimeout int) *Node
 	}
 }
 
-func (nr *NodeRepository) Add(grapgId string, req *dto_request.AddNodeRequest) (*dto_response.AddNodeResponse, error) {
+func (nr *NodeRepository) Add(graphId string, req *dto_request.AddNodeRequest) (*dto_response.AddNodeResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), nr.dbTimeout)
 	defer cancel()
 
 	collection := nr.db.Collection("graphs")
 
-	objectID, err := primitive.ObjectIDFromHex(grapgId)
+	objectID, err := primitive.ObjectIDFromHex(graphId)
 	if err != nil {
-		log.Println("NodeRepository, GraphId is " + grapgId)
+		log.Println("NodeRepository, GraphId is " + graphId)
 		return nil, fmt.Errorf("неверный формат GraphId: %v", err)
 	}
 
 	filter := bson.M{"_id": objectID}
 
 	newNodeID := "n" + uuid.New().String()[:4]
-
 	newNode := bson.M{
 		"id":        newNodeID,
 		"label":     req.Label,     // предполагается, что label приходит в запросе
@@ -55,7 +55,10 @@ func (nr *NodeRepository) Add(grapgId string, req *dto_request.AddNodeRequest) (
 		"type":      req.Type,      // тип (например, "circle")
 		"isSpecial": req.IsSpecial, // флаг
 		"parentId":  req.ParentID,  // ID родителя (если есть)
+		"contact":   entities.Contact{},
 	}
+
+	log.Info("New Node\n" + newNode.String())
 
 	update := bson.M{
 		"$push": bson.M{
@@ -76,7 +79,7 @@ func (nr *NodeRepository) Add(grapgId string, req *dto_request.AddNodeRequest) (
 	log.Info("Обновлено документов:", result.ModifiedCount)
 
 	// Возвращаем ответ, возможно с ID нового узла
-	return &dto_response.AddNodeResponse{IdNode: newNodeID}, nil
+	return &dto_response.AddNodeResponse{NodeId: newNodeID}, nil
 }
 
 func (nr *NodeRepository) Change(graphId string, req *dto_request.ChangeNodeRequest) (*dto_response.ChangeNodeResponse, error) {

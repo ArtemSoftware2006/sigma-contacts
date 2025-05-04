@@ -2,12 +2,13 @@ package service
 
 import (
 	"fmt"
-	"log"
 	"sigma-contacts/internal/config"
 	dto_request "sigma-contacts/internal/domain/dto/request"
 	dto_response "sigma-contacts/internal/domain/dto/response"
 	"sigma-contacts/internal/domain/entities"
 	repository_interface "sigma-contacts/internal/domain/interface/repository"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type ContactFullDataService struct {
@@ -20,37 +21,41 @@ type ContactFullDataService struct {
 
 func NewContactService(nodeRepository repository_interface.NodeRepository, edgeRepository repository_interface.EdgeRepository,
 	graphRepository repository_interface.GraphRepository,
-	//contactRepository repository_interface.ContactRepository,
+	contactRepository repository_interface.ContactRepository,
 	config *config.AppConfig) *ContactFullDataService {
 	return &ContactFullDataService{
-		nodeRepository:  nodeRepository,
-		edgeRepository:  edgeRepository,
-		graphRepository: graphRepository,
-		//contactRepository: contactRepository,
-		config: config,
+		nodeRepository:    nodeRepository,
+		edgeRepository:    edgeRepository,
+		graphRepository:   graphRepository,
+		contactRepository: contactRepository,
+		config:            config,
 	}
 }
 
 func (cs *ContactFullDataService) Add(req *dto_request.AddContactFullDataRequest) (*dto_response.AddContactFullDataResponse, error) {
 	nodeResponse, err := cs.nodeRepository.Add(req.GraphId, &req.Node)
 	if err != nil {
-		log.Println("ContactService: error adding node", err)
+		log.Error("ContactService: error adding node", err)
 		return nil, err
 	}
 
-	edgeNode, err := cs.edgeRepository.Add(req.GraphId, nodeResponse.IdNode, &req.Edge)
+	log.Info("Add Contact")
+	contactResponse, err := cs.contactRepository.Add(req.GraphId, nodeResponse.NodeId, dto_request.EmptyAddContactRequest())
 	if err != nil {
-		log.Println("ContactService: error adding edge", err)
+		log.Error("ContactService: error adding contact", err)
+		return nil, err
+	}
+
+	edgeResponse, err := cs.edgeRepository.Add(req.GraphId, nodeResponse.NodeId, &req.Edge)
+	if err != nil {
+		log.Error("ContactService: error adding edge", err)
 		return nil, err
 	}
 
 	return &dto_response.AddContactFullDataResponse{
-		Node: dto_response.AddNodeResponse{
-			IdNode: nodeResponse.IdNode,
-		},
-		Edge: dto_response.AddEdgeResponse{
-			IdEdge: edgeNode.IdEdge,
-		},
+		Node:    nodeResponse,
+		Edge:    edgeResponse,
+		Contact: contactResponse,
 		BaseResponse: dto_response.BaseResponse{
 			Status:  200,
 			Message: "Ok",
@@ -61,13 +66,13 @@ func (cs *ContactFullDataService) Add(req *dto_request.AddContactFullDataRequest
 func (cs *ContactFullDataService) Change(req *dto_request.ChangeContactFullDataRequest) (*dto_response.ChangeContactFullDataResponse, error) {
 	_, err := cs.nodeRepository.Change(req.GraphId, &req.Node)
 	if err != nil {
-		log.Println("ContactService: error changing node", err)
+		log.Error("ContactService: error changing node", err)
 		return nil, err
 	}
 
 	_, err = cs.edgeRepository.Change(req.GraphId, &req.Edge)
 	if err != nil {
-		log.Println("ContactService: error changing edge", err)
+		log.Error("ContactService: error changing edge", err)
 		return nil, err
 	}
 
@@ -116,13 +121,13 @@ func (cs *ContactFullDataService) Delete(req *dto_request.DeleteContactFullDataR
 
 	err = cs.nodeRepository.Delete(req.GraphId, req.NodeId)
 	if err != nil {
-		log.Println("ContactService: error deleting node", err)
+		log.Error("ContactService: error deleting node", err)
 		return nil, err
 	}
 
 	err = cs.edgeRepository.Delete(req.GraphId, req.EdgeId)
 	if err != nil {
-		log.Println("ContactService: error deleting edge", err)
+		log.Error("ContactService: error deleting edge", err)
 		return nil, err
 	}
 

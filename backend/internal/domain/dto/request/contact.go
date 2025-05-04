@@ -1,5 +1,18 @@
 package dto_request
 
+func EmptyAddContactRequest() *AddContactRequest {
+	return &AddContactRequest{
+		Surname:       "",
+		Name:          "",
+		Phone:         "",
+		VkId:          "",
+		TelegramId:    "",
+		WhatsAppPhone: "",
+		Github:        "",
+		Comment:       "",
+	}
+}
+
 type AddContactRequest struct {
 	Surname       string `json:"surname"`
 	Name          string `json:"name"`

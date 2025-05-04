@@ -6,6 +6,6 @@ import (
 )
 
 type ContactRepository interface {
-	Add(grpahId string, contact *dto_request.AddContactRequest) (*dto_response.AddContactResponse, error)
-	Change(graphId string, contact *dto_request.ChangeEdgeRequest) (*dto_response.ChangeEdgeResponse, error)
+	Add(graphId string, nodeId string, contact *dto_request.AddContactRequest) (*dto_response.AddContactResponse, error)
+	//Change(graphId string, contact *dto_request.ChangeContactRequest) (*dto_response.ChangeContactResponse, error)
 }

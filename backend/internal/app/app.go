@@ -9,6 +9,7 @@ import (
 	service_interface "sigma-contacts/internal/domain/interface/service"
 	"sigma-contacts/internal/repository"
 	"sigma-contacts/internal/service"
+	"sigma-contacts/pkg/logger"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -18,6 +19,8 @@ import (
 )
 
 func Run() {
+	logger.InitLogger()
+
 	err := LoadEnv()
 	if err != nil {
 		log.Fatal(err)
@@ -43,13 +46,14 @@ func Run() {
 	var EdgeRepository repository_interface.EdgeRepository = repository.NewEdgeRepository(client, config.DatabaseName, DB_TIMEOUT)
 	var GraphRepository repository_interface.GraphRepository = repository.NewGraphRepository(client, config.DatabaseName, DB_TIMEOUT)
 	var NodeRepository repository_interface.NodeRepository = repository.NewNodeRepository(client, config.DatabaseName, DB_TIMEOUT)
+	var ContactRepository repository_interface.ContactRepository = repository.NewContactRepository(client, config.DatabaseName, DB_TIMEOUT)
 
 	//Services
 	var UserService service_interface.UserService = service.NewUserService(UserRepository)
 	var NodeService *service.NodeService = service.NewNodeService(NodeRepository, &config)
 	var AuthService service.AuthService = *service.NewAuthService(UserRepository, &config)
 	var GraphService *service.GraphService = service.NewGraphService(GraphRepository, UserRepository, NodeRepository)
-	var ContactService *service.ContactFullDataService = service.NewContactService(NodeRepository, EdgeRepository, GraphRepository, &config)
+	var ContactService *service.ContactFullDataService = service.NewContactService(NodeRepository, EdgeRepository, GraphRepository, ContactRepository, &config)
 
 	//Controllers
 	var UserController *controller.UserController = controller.NewUserController(&UserService)
