@@ -10,27 +10,30 @@ import (
 )
 
 type Router struct {
-	UserController    *controller.UserController
-	UtilsController   *controller.UtilsController
-	AuthController    *controller.AuthController
-	GraphController   *controller.GraphController
-	ContactController *controller.ContactController
-	NodeController    *controller.NodeController
-	AppConfig         *config.AppConfig
+	UserController      *controller.UserController
+	UtilsController     *controller.UtilsController
+	AuthController      *controller.AuthController
+	GraphController     *controller.GraphController
+	ContactController   *controller.ContactFullDataController
+	NodeController      *controller.NodeController
+	AnalyticsController *controller.AnalyticsController
+	AppConfig           *config.AppConfig
 }
 
 func NewRouter(userController *controller.UserController, utilsController *controller.UtilsController,
 	AuthController *controller.AuthController, GraphController *controller.GraphController,
-	ContactController *controller.ContactController, NodeController *controller.NodeController,
+	ContactController *controller.ContactFullDataController, NodeController *controller.NodeController,
+	AnalyticsController *controller.AnalyticsController,
 	AppConfig *config.AppConfig) *Router {
 	return &Router{
-		UserController:    userController,
-		UtilsController:   utilsController,
-		AuthController:    AuthController,
-		GraphController:   GraphController,
-		ContactController: ContactController,
-		NodeController:    NodeController,
-		AppConfig:         AppConfig,
+		UserController:      userController,
+		UtilsController:     utilsController,
+		AuthController:      AuthController,
+		GraphController:     GraphController,
+		ContactController:   ContactController,
+		NodeController:      NodeController,
+		AnalyticsController: AnalyticsController,
+		AppConfig:           AppConfig,
 	}
 }
 
@@ -80,6 +83,11 @@ func (r *Router) InitRoutes() *gin.Engine {
 	node.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret))
 
 	node.PUT("/:id", r.NodeController.Change)
+
+	analytics := api.Group("/analytics")
+	analytics.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret))
+
+	analytics.GET("/baseInfo", r.AnalyticsController.Add)
 
 	return router
 }

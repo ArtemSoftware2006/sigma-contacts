@@ -1,10 +1,11 @@
 package controller
 
 import (
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	dto_request "sigma-contacts/internal/domain/dto/request"
 	service_interface "sigma-contacts/internal/domain/interface/service"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,9 +14,9 @@ type UserController struct {
 	UserService service_interface.UserService
 }
 
-func NewUserController(userService *service_interface.UserService) *UserController {
+func NewUserController(userService service_interface.UserService) *UserController {
 	return &UserController{
-		UserService: *userService,
+		UserService: userService,
 	}
 }
 

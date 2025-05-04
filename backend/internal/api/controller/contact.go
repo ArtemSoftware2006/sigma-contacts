@@ -8,24 +8,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ContactController struct {
-	ContactService service_interface.ContactFullDataService
+type ContactFullDataController struct {
+	ContactFullDataService service_interface.ContactFullDataService
 }
 
-func NewContactController(ContactService service_interface.ContactFullDataService) *ContactController {
-	return &ContactController{
-		ContactService: ContactService,
+func NewContactController(ContactFullDataService service_interface.ContactFullDataService) *ContactFullDataController {
+	return &ContactFullDataController{
+		ContactFullDataService: ContactFullDataService,
 	}
 }
 
-func (c *ContactController) Add(ctx *gin.Context) {
+func (c *ContactFullDataController) Add(ctx *gin.Context) {
 	var req dto_request.AddContactFullDataRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	addContactResponse, err := c.ContactService.Add(&req)
+	addContactResponse, err := c.ContactFullDataService.Add(&req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -34,14 +34,14 @@ func (c *ContactController) Add(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, addContactResponse)
 }
 
-func (c *ContactController) Change(ctx *gin.Context) {
+func (c *ContactFullDataController) Change(ctx *gin.Context) {
 	var req dto_request.ChangeContactFullDataRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	changeContactResponse, err := c.ContactService.Change(&req)
+	changeContactResponse, err := c.ContactFullDataService.Change(&req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -50,14 +50,14 @@ func (c *ContactController) Change(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, changeContactResponse)
 }
 
-func (c *ContactController) Delete(ctx *gin.Context) {
+func (c *ContactFullDataController) Delete(ctx *gin.Context) {
 	var req dto_request.DeleteContactFullDataRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	changeContactResponse, err := c.ContactService.Delete(&req)
+	changeContactResponse, err := c.ContactFullDataService.Delete(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
