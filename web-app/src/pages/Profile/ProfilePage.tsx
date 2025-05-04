@@ -3,31 +3,44 @@ import {
   Box,
   Avatar,
   Text,
-  Input,
   Button,
-  Flex,
   Heading,
   useToast,
-  FormControl,
-  FormLabel,
   VStack,
-  Stack
+  Stack,
 } from '@chakra-ui/react';
 import { useAuth } from '../../hook/useAuth';
+import { StatsCard } from '../../components/statsCard/statsCard';
+import { Profile } from '../../types/profile';
+import { ProfileForm } from '../../components/forms/profileForm/profileForm';
+import { ProfileHeader } from '../../components/profileHeader/profileHeader';
 
-type Profile = {
-  firstName: string;
-  lastName: string;
-  avatarUrl: string;
-};
+// Компонент действий профиля
+const ProfileActions = ({
+  onEdit,
+  onLogout
+}: {
+  onEdit: () => void;
+  onLogout: () => void;
+}) => (
+  <Stack direction="column" spacing={4} width="200px">
+    <Button colorScheme="blue" onClick={onEdit}>
+      Редактировать профиль
+    </Button>
+    <Button variant="outline" onClick={onLogout}>
+      Выйти
+    </Button>
+  </Stack>
+);
 
+// Основной компонент профиля
 const ProfilePage = () => {
   const [profile, setProfile] = useState<Profile>({
     firstName: 'Иван',
     lastName: 'Иванов',
     avatarUrl: 'https://bit.ly/dan-abramov'
   });
-  
+
   const { logout } = useAuth();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const toast = useToast();
@@ -46,82 +59,32 @@ const ProfilePage = () => {
       title: 'Профиль обновлен',
       status: 'success',
       duration: 2000,
-      isClosable: true,
+      isClosable: true
     });
   };
 
   return (
-    <Box p={6} maxW="md" mx="auto" mt={10}>
-      <Heading as="h1" size="xl" mb={6} textAlign="center">
-        Мой профиль
-      </Heading>
-      
-      <VStack spacing={6} align="center">
-        <Avatar
-          size="2xl"
-          name={`${profile.firstName} ${profile.lastName}`}
-          src={profile.avatarUrl}
-          mb={4}
+    <Box p={6} maxW="md" mx="auto" mt={10} display={"flex"} flexDirection={"row"}>
+      <Stack minWidth={"50vh"} alignItems={"center"}>
+        <ProfileHeader {...profile} />
+        <ProfileActions
+          onEdit={() => setIsEditing(true)}
+          onLogout={logout}
         />
-        
+      </Stack>
+
+      <VStack spacing={6} align="center" borderLeft="1px solid black">
         {isEditing ? (
-          <Box w="100%">
-            <VStack spacing={4} align="center">
-              <FormControl>
-                <FormLabel>Имя</FormLabel>
-                <Input
-                  name="firstName"
-                  value={profile.firstName}
-                  onChange={handleInputChange}
-                />
-              </FormControl>
-              
-              <FormControl>
-                <FormLabel>Фамилия</FormLabel>
-                <Input
-                  name="lastName"
-                  value={profile.lastName}
-                  onChange={handleInputChange}
-                />
-              </FormControl>
-              
-              <Stack direction="column" spacing={4} mt={4}>
-                <Button 
-                  colorScheme="blue" 
-                  onClick={handleSave}
-                >
-                  Сохранить
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setIsEditing(false)}
-                >
-                  Отмена
-                </Button>
-              </Stack>
-            </VStack>
-          </Box>
+          <ProfileForm
+            profile={profile}
+            onInputChange={handleInputChange}
+            onSave={handleSave}
+            onCancel={() => setIsEditing(false)}
+          />
         ) : (
-          <VStack spacing={6} align="center">
-            <Text fontSize="2xl" fontWeight="bold">
-              {profile.firstName} {profile.lastName}
-            </Text>
-            
-            <Stack direction="column" spacing={4} w="100%">
-              <Button
-                colorScheme="blue"
-                onClick={() => setIsEditing(true)}
-              >
-                Редактировать профиль
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => logout()}
-              >
-                Выйти
-              </Button>
-            </Stack>
-          </VStack>
+          <Stack direction={"column"} alignItems={"center"} justifyContent={"center"}>
+            <StatsCard />
+          </Stack>
         )}
       </VStack>
     </Box>

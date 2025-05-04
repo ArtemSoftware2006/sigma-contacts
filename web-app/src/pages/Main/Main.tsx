@@ -24,7 +24,7 @@ const Main: FC = () => {
   const [parentNodeId, setParentNodeId] = useState<string | null>(null)
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
 
-  const { graph, vitrualGraph, refresh, setGraph } = useGraphStore();
+  const { graph, refresh  } = useGraphStore();
   const [graphVersion, setGraphVersion] = useState(0);
 
   const toggleSettings = () => setSettingsOpen(!isSettingsOpen);
