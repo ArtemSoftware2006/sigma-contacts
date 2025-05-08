@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { AuthService } from '../service/authService';
 import { useNavigate } from 'react-router-dom';
 import { info } from '../utils/logger'
+import { useUserStore } from './UserStore';
+import { UserService } from '../service/userService';
+import { UserUpdate } from '../types/user';
 
 export const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
@@ -13,7 +16,12 @@ export const useAuth = () => {
       setLoading(true);
       const { token, user } = await AuthService.login({ nickname, password });
       localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      const userInfo : UserUpdate = await UserService.getMe()
+      
+      info(userInfo)
+      localStorage.setItem('user', JSON.stringify(userInfo));      
+      info(localStorage.getItem("user"))
+
       navigate('/');
     } catch (err) {
       const error = err as Error; 
@@ -27,7 +35,7 @@ export const useAuth = () => {
     try {
       setLoading(true);
       const { token, user } = await AuthService.register({ nickname, password });
-      //TODO: вернуть из бека токен!!!
+      //TODO: вернуть из бека токен при регистрации!!!
       info(token, user)
 
       logout()

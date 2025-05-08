@@ -19,15 +19,6 @@ interface GraphResponse {
     Edges: Edge[]
 }
 
-interface ApiError {
-    message: string;
-    // Дополнительные поля ошибки, если они есть в вашем API
-}
-
-interface AuthHeaders {
-    Authorization: string
-}
-
 export class ContactService {
 
 //     static GetContactForNode(nodeId: string): Contact {
