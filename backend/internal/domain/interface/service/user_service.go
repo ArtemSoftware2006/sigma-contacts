@@ -7,5 +7,6 @@ import (
 
 type UserService interface {
 	Create(*dto_request.UserCreateRequest) (*dto_response.UserCreateResponse, error)
-	Get(*dto_request.UserGetRequest) (*dto_response.UserGetResponse, error)
+	GetMe(*dto_request.UserGetRequest) (*dto_response.UserInfoResponse, error)
+	Update(*dto_request.UserUpdateRequest) (*dto_response.UserUpdateResponse, error)
 }

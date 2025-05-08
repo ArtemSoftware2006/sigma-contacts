@@ -61,8 +61,9 @@ func (r *Router) InitRoutes() *gin.Engine {
 	users := api.Group("/users")
 	users.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret))
 
-	users.GET("/:id", r.UserController.GetUser)
+	users.GET("/me", r.UserController.GetMe)
 	users.POST("/", r.UserController.CreateUser)
+	users.PUT("/", r.UserController.UpdateUser)
 
 	graph := api.Group("/graph")
 	graph.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret))

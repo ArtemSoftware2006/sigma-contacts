@@ -81,7 +81,7 @@ func (er *EdgeRepository) Add(graphId string, targetNodeId string, req *dto_requ
 	return &dto_response.AddEdgeResponse{EdgeId: newEdgeID}, nil
 }
 
-func (er *EdgeRepository) Change(graphId string, req *dto_request.ChangeEdgeRequest) (*dto_response.ChangeEdgeResponse, error) {
+func (er *EdgeRepository) Update(graphId string, req *dto_request.ChangeEdgeRequest) (*dto_response.ChangeEdgeResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), er.dbTimeout)
 	defer cancel()
 

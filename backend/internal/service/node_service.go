@@ -22,11 +22,11 @@ func NewNodeService(nodeRepository repository_interface.NodeRepository, config *
 }
 
 func (ns *NodeService) ChangeNode(graphid string, req *dto_request.ChangeNodeRequest) (*dto_response.ChangeNodeResponse, error) {
-	response, err := ns.NodeRepository.Change(graphid, req)
+	response, err := ns.NodeRepository.Update(graphid, req)
 	log.Info(&response)
 
 	if err != nil {
-		log.Println("NodeService, Error changing graph`s node")
+		log.Error("NodeService, Error changing graph`s node")
 
 		return nil, err
 	}

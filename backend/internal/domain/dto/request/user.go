@@ -7,6 +7,12 @@ type UserCreateRequest struct {
 	Password string `json:"password" bson:"password"`
 }
 
+type UserUpdateRequest struct {
+	Id      string `json:"_id"`
+	Name    string `json:"name" bson:"name"`
+	Surname string `json:"surname" bson:"surname"`
+}
+
 type UserGetRequest struct {
 	Id string `json:"_id"`
 }

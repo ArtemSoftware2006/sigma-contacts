@@ -82,7 +82,7 @@ func (nr *NodeRepository) Add(graphId string, req *dto_request.AddNodeRequest) (
 	return &dto_response.AddNodeResponse{NodeId: newNodeID}, nil
 }
 
-func (nr *NodeRepository) Change(graphId string, req *dto_request.ChangeNodeRequest) (*dto_response.ChangeNodeResponse, error) {
+func (nr *NodeRepository) Update(graphId string, req *dto_request.ChangeNodeRequest) (*dto_response.ChangeNodeResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), nr.dbTimeout)
 	defer cancel()
 

@@ -64,13 +64,13 @@ func (cs *ContactFullDataService) Add(req *dto_request.AddContactFullDataRequest
 }
 
 func (cs *ContactFullDataService) Change(req *dto_request.ChangeContactFullDataRequest) (*dto_response.ChangeContactFullDataResponse, error) {
-	_, err := cs.nodeRepository.Change(req.GraphId, &req.Node)
+	_, err := cs.nodeRepository.Update(req.GraphId, &req.Node)
 	if err != nil {
 		log.Error("ContactService: error changing node", err)
 		return nil, err
 	}
 
-	_, err = cs.edgeRepository.Change(req.GraphId, &req.Edge)
+	_, err = cs.edgeRepository.Update(req.GraphId, &req.Edge)
 	if err != nil {
 		log.Error("ContactService: error changing edge", err)
 		return nil, err

@@ -20,37 +20,61 @@ func NewUserController(userService service_interface.UserService) *UserControlle
 	}
 }
 
-func (uc *UserController) GetUser(c *gin.Context) {
-	id := c.Param("id")
+func (uc *UserController) GetMe(ctx *gin.Context) {
+	userId := ctx.Value("userId").(string)
 
-	resp, err := uc.UserService.Get(&dto_request.UserGetRequest{Id: id})
+	resp, err := uc.UserService.GetMe(&dto_request.UserGetRequest{Id: userId})
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		log.Error("UserController Error: ", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	ctx.JSON(http.StatusOK, resp)
 }
 
-func (uc *UserController) CreateUser(c *gin.Context) {
+func (uc *UserController) CreateUser(ctx *gin.Context) {
 	var request dto_request.UserCreateRequest
 
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	_, err := uc.UserService.Create(&request)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		log.Error("UserController Error: ", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Пользовательуспешно создан!",
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Пользователь успешно создан!",
 	})
+}
+
+func (uc *UserController) UpdateUser(ctx *gin.Context) {
+	userId := ctx.Value("userId").(string)
+
+	var request dto_request.UserUpdateRequest
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	request.Id = userId
+
+	log.Info(request)
+	response, err := uc.UserService.Update(&request)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Error("UserController Error: ", err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }

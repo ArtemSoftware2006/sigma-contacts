@@ -28,7 +28,7 @@ func (us *UserService) Create(user *dto_request.UserCreateRequest) (*dto_respons
 	return resp, err
 }
 
-func (us *UserService) Get(user *dto_request.UserGetRequest) (*dto_response.UserGetResponse, error) {
+func (us *UserService) GetMe(user *dto_request.UserGetRequest) (*dto_response.UserInfoResponse, error) {
 	resp, err := us.UserRepository.Get(user)
 	if err != nil {
 		log.Error("UserService Error: ", err)
@@ -36,4 +36,17 @@ func (us *UserService) Get(user *dto_request.UserGetRequest) (*dto_response.User
 	}
 
 	return resp, err
+}
+
+func (us *UserService) Update(user *dto_request.UserUpdateRequest) (*dto_response.UserUpdateResponse, error) {
+	response, err := us.UserRepository.Update(user)
+	log.Info(response)
+
+	if err != nil {
+		log.Error("UserService, Error in updating user. Error: ", err)
+
+		return nil, err
+	}
+
+	return response, nil
 }

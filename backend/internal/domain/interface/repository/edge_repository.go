@@ -7,6 +7,6 @@ import (
 
 type EdgeRepository interface {
 	Add(string, string, *dto_request.AddEdgeRequest) (*dto_response.AddEdgeResponse, error)
-	Change(string, *dto_request.ChangeEdgeRequest) (*dto_response.ChangeEdgeResponse, error)
+	Update(string, *dto_request.ChangeEdgeRequest) (*dto_response.ChangeEdgeResponse, error)
 	Delete(graphId string, edgeId string) error
 }
