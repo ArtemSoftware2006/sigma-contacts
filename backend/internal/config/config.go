@@ -14,6 +14,7 @@ type JwtConfig struct {
 
 type AppConfig struct {
 	DataBaseConfig
+	Evironment string
 	JwtConfig
 }
 
@@ -24,6 +25,7 @@ func GetAppConfig() *AppConfig {
 			DatabasePort: getEnv("DB_PORT", "27017"),
 			DatabaseName: getEnv("DATABASE_NAME", "sigma-contacts"),
 		},
+		Evironment: getEnv("ENVIRONMENT", "dev"),
 		JwtConfig: JwtConfig{
 			JwtSecret: getEnv("JWT_SECRET", "secret"),
 		},

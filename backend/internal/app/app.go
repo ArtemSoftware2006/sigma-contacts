@@ -10,6 +10,7 @@ import (
 	"sigma-contacts/internal/repository"
 	"sigma-contacts/internal/service"
 	"sigma-contacts/pkg/logger"
+	"sigma-contacts/pkg/utils"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -19,14 +20,14 @@ import (
 )
 
 func Run() {
-	logger.InitLogger()
-
 	err := LoadEnv()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	config := *config.GetAppConfig()
+
+	logger.InitLogger(config.Evironment)
 
 	client, err := DbConnect(config.DataBaseConfig.DatabaseHost)
 	if err != nil {
@@ -37,6 +38,14 @@ func Run() {
 			log.Fatal("Ошибка закрытия соединения:", err)
 		}
 	}()
+
+	//utils
+
+	const MIN_PASSWORD_LENGTH = 9
+	const MAX_LOGIN_LENGTH = 15
+
+	var PasswordValidator *utils.PasswordValidator = utils.NewPasswordValidator(MIN_PASSWORD_LENGTH)
+	var LoginValidator *utils.LoginValidator = utils.NewLoginValidator(MAX_LOGIN_LENGTH)
 
 	//Repositories
 	//TODO: передавать в Repositories context с задержкой. А не формировать его частично в конструкторе, частично в самом Repository
@@ -51,7 +60,7 @@ func Run() {
 	//Services
 	var UserService service_interface.UserService = service.NewUserService(UserRepository)
 	var NodeService service_interface.NodeService = service.NewNodeService(NodeRepository, &config)
-	var AuthService service_interface.AuthService = service.NewAuthService(UserRepository, &config)
+	var AuthService service_interface.AuthService = service.NewAuthService(UserRepository, PasswordValidator, LoginValidator, &config)
 	var GraphService service_interface.GraphService = service.NewGraphService(GraphRepository, UserRepository, NodeRepository)
 	var ContactService service_interface.ContactFullDataService = service.NewContactService(NodeRepository, EdgeRepository, GraphRepository, ContactRepository, &config)
 	var AnalyticsService service_interface.AnalyticsService = service.NewAnalysticsService(GraphRepository)
