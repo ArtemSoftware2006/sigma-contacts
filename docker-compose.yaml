@@ -10,6 +10,8 @@ services:
     depends_on:
       - database
     restart: unless-stopped
+    volumes:
+      - ./backend/logs:/app/logs
     networks:
       - sigma-contacts-net
 
