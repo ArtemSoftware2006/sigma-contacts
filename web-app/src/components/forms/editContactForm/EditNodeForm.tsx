@@ -19,31 +19,8 @@ interface EditNodeFormProps {
 
 const EditNodeForm: React.FC<EditNodeFormProps> = ({ editNode, onChange, onSave, onCancel }) => {
   return (
-    <Stack spacing={4}>
-      {/* <Heading size="md">Редактирование узла</Heading> */}
-
-      <FormControl>
-        <FormLabel>Название узла</FormLabel>
-        <Input
-          name="label"
-          value={editNode.label}
-          onChange={onChange}
-          placeholder="Введите название"
-        />
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Размер</FormLabel>
-        <Input
-          type="number"
-          name="size"
-          value={editNode.size}
-          onChange={onChange}
-          min="1"
-          max="50"
-        />
-      </FormControl>
-
+    <Stack spacing={1}>
+      <Heading size="md">Редактирование узла</Heading>
       <FormControl>
         <FormLabel>Цвет</FormLabel>
         <Input
@@ -55,19 +32,6 @@ const EditNodeForm: React.FC<EditNodeFormProps> = ({ editNode, onChange, onSave,
           p={0}
           border="none"
         />
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Тип узла</FormLabel>
-        <Select
-          name="type"
-          value={editNode.type}
-          onChange={onChange}
-        >
-          <option value="default">По умолчанию</option>
-          <option value="important">Важный</option>
-          <option value="group">Группа</option>
-        </Select>
       </FormControl>
 
       {/* Добавление формы контакта */}
@@ -124,26 +88,6 @@ const EditNodeForm: React.FC<EditNodeFormProps> = ({ editNode, onChange, onSave,
       </FormControl>
 
       <FormControl>
-        <FormLabel>WhatsApp Телефон</FormLabel>
-        <Input
-          name="contact.whatsAppPhone"
-          value={editNode.contact?.whatsAppPhone || ''}
-          onChange={onChange}
-          placeholder="Введите телефон для WhatsApp"
-        />
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Github</FormLabel>
-        <Input
-          name="contact.github"
-          value={editNode.contact?.github || ''}
-          onChange={onChange}
-          placeholder="Введите ссылку на Github"
-        />
-      </FormControl>
-
-      <FormControl>
         <FormLabel>Комментарий</FormLabel>
         <Input
           name="contact.comment"
@@ -154,7 +98,7 @@ const EditNodeForm: React.FC<EditNodeFormProps> = ({ editNode, onChange, onSave,
       </FormControl>
 
       {/* Кнопки сохранения / отмены */}
-      <Button colorScheme="blue" mt={14} onClick={onSave}>
+      <Button colorScheme="blue" mt={2} onClick={onSave}>
         Сохранить изменения
       </Button>
       <Button colorScheme="gray" mt={2} onClick={onCancel}>

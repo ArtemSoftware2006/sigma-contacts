@@ -39,4 +39,25 @@ export class NodeService {
             throw new Error(axiosError.response?.data?.message || 'Put node failed');
         }
     }
+
+    static async DeleteNode(nodeId : string): Promise<BaseResponse | Error> {
+        try {
+            const authHeaders = AuthService.getAuthHeader();
+
+            const headers = {
+                'Content-Type': 'application/json',  
+                ...authHeaders
+            };
+
+            const response = await axios.delete<BaseResponse>(`${API_URL}/node/${nodeId}`, { headers });
+
+            info(response)
+
+            return response.data
+        } catch (error) {
+            console.error(error)
+            const axiosError = error as AxiosError<ApiErrorResponse>;
+            throw new Error(axiosError.response?.data?.message || 'Delete node failed');
+        }
+    }
 }

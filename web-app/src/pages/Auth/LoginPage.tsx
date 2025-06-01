@@ -32,7 +32,7 @@ const LoginPage: React.FC = () => {
   const bgColor = useColorModeValue('gray.50', 'gray.800');
   const cardBg = useColorModeValue('white', 'gray.700');
   const inputBg = useColorModeValue('white', 'gray.600');
-  const primaryColor = 'teal';
+  const primaryColor = 'black';
   const textColor = useColorModeValue('gray.700', 'gray.200');
   const mutedTextColor = useColorModeValue('gray.500', 'gray.400');
   const minWidth = '100%'
@@ -70,10 +70,10 @@ const LoginPage: React.FC = () => {
             color={`${primaryColor}.500`}
             fontWeight="bold"
           >
-            Welcome Back
+            Добро пожаловать
           </Heading>
           <Text fontSize="md" color={mutedTextColor}>
-            Sign in to access your account
+            Авторизуйтесь для доступа к аккаунту
           </Text>
         </Box>
 
@@ -168,7 +168,6 @@ const LoginPage: React.FC = () => {
                     _hover={{ color: `${primaryColor}.500`, bg: 'transparent' }}
                     onClick={() => setShowPassword(!showPassword)}
                     position={"relative"}
-                    top={'15px'}
                     left={"-3px"}
                     size="sm"
                   />
@@ -179,7 +178,7 @@ const LoginPage: React.FC = () => {
             <Button
               width="full"
               mt={8}
-              colorScheme={primaryColor}
+              colorScheme={"gray"}
               type="submit"
               size="lg"
               height="48px"
@@ -198,13 +197,13 @@ const LoginPage: React.FC = () => {
               }}
               transition="all 0.2s"
             >
-              Sign In
+              Вход
             </Button>
           </form>
 
           <Box textAlign="center" pt={2}>
             <Text fontSize="sm" color={mutedTextColor}>
-              Don't have an account?{' '}
+              Ещё нет аккаунта?{' '}
               <Link to="/register">
                 <Button 
                   as="span" 
@@ -216,7 +215,7 @@ const LoginPage: React.FC = () => {
                     textDecoration: 'underline',
                   }}
                 >
-                  Register now
+                  Регистрируйтесь сейчас!
                 </Button>
               </Link>
             </Text>

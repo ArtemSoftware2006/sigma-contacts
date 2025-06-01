@@ -52,6 +52,7 @@ const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick, onAddNode 
           color: nodeAttributes.color,
           x: nodeAttributes.x,
           y: nodeAttributes.y,
+          isGroup: nodeAttributes.isGroup,
           type: nodeAttributes.type,
           parentId : nodeAttributes.parentId,
           contact: vitrualGraph?.nodes.find(node => node.id == nodeId)?.contact || newEmptyContact()
@@ -67,11 +68,15 @@ const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick, onAddNode 
       //event.preventDefault();
       const nodeAttributes = sigma.getGraph().getNodeAttributes(node);
       //info("Правая кнопка по узлу:", node, nodeAttributes);
-      
+
+      let isShowContextMenu = false
+      if (vitrualGraph?.nodes.find(virtualNode => virtualNode.id == node && virtualNode.isGroup)) {
+        isShowContextMenu= true
+      }
       setContextMenu({
-        show: true,
-        x: event.x - 100,
-        y: event.y + 30,
+        show: isShowContextMenu,
+        x: event.x - 120,
+        y: event.y + 20,
         nodeId: node
       });
     });

@@ -11,7 +11,6 @@ import {
   IconButton,
   FormLabel,
   FormControl,
-  FormErrorMessage,
   useColorModeValue,
   InputGroup,
   InputRightElement,
@@ -36,7 +35,7 @@ const RegisterPage: React.FC = () => {
   const bgColor = useColorModeValue('gray.50', 'gray.800');
   const cardBg = useColorModeValue('white', 'gray.700');
   const inputBg = useColorModeValue('white', 'gray.600');
-  const primaryColor = 'teal';
+  const primaryColor = 'black';
   const textColor = useColorModeValue('gray.700', 'gray.200');
   const mutedTextColor = useColorModeValue('gray.500', 'gray.400');
   const minWidth = '100%';
@@ -57,10 +56,10 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <Flex 
-      minH="100vh" 
-      align="center" 
-      justify="center" 
+    <Flex
+      minH="100vh"
+      align="center"
+      justify="center"
       bg={bgColor}
       px={4}
       py={8}
@@ -76,25 +75,25 @@ const RegisterPage: React.FC = () => {
         borderColor={useColorModeValue('gray.200', 'gray.600')}
       >
         <Box textAlign="center" mb={8}>
-          <Heading 
-            as="h1" 
-            size="xl" 
-            mb={3} 
+          <Heading
+            as="h1"
+            size="xl"
+            mb={3}
             color={`${primaryColor}.500`}
             fontWeight="bold"
           >
-            Create Account
+            Создание аккаунта
           </Heading>
           <Text fontSize="md" color={mutedTextColor}>
-            Join us to get started
+            Присоединяйтесь к нам, чтобы начать
           </Text>
         </Box>
 
         {error && (
           <ScaleFade in={!!error}>
-            <Alert 
-              status="error" 
-              mb={6} 
+            <Alert
+              status="error"
+              mb={6}
               display={"flex"}
               justifyContent={"center"}
               borderRadius="md"
@@ -113,9 +112,9 @@ const RegisterPage: React.FC = () => {
         <Stack spacing={6}>
           <form onSubmit={handleSubmit}>
             <FormControl isInvalid={!!error}>
-              <FormLabel 
-                htmlFor="nickname" 
-                fontSize="sm" 
+              <FormLabel
+                htmlFor="nickname"
+                fontSize="sm"
                 color={textColor}
                 fontWeight="medium"
                 mb={2}
@@ -143,9 +142,9 @@ const RegisterPage: React.FC = () => {
             </FormControl>
 
             <FormControl mt={6} isInvalid={!!error}>
-              <FormLabel 
-                htmlFor="password" 
-                fontSize="sm" 
+              <FormLabel
+                htmlFor="password"
+                fontSize="sm"
                 color={textColor}
                 fontWeight="medium"
                 mb={2}
@@ -180,7 +179,6 @@ const RegisterPage: React.FC = () => {
                     _hover={{ color: `${primaryColor}.500`, bg: 'transparent' }}
                     onClick={() => setShowPassword(!showPassword)}
                     position={"relative"}
-                    top={'15px'}
                     left={"-3px"}
                     size="sm"
                   />
@@ -189,14 +187,14 @@ const RegisterPage: React.FC = () => {
             </FormControl>
 
             <FormControl mt={6} isInvalid={!!error}>
-              <FormLabel 
-                htmlFor="confirmPassword" 
-                fontSize="sm" 
+              <FormLabel
+                htmlFor="confirmPassword"
+                fontSize="sm"
                 color={textColor}
                 fontWeight="medium"
                 mb={2}
               >
-                Confirm Password
+                Подтвердите Password
               </FormLabel>
               <InputGroup>
                 <Input
@@ -226,7 +224,6 @@ const RegisterPage: React.FC = () => {
                     _hover={{ color: `${primaryColor}.500`, bg: 'transparent' }}
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     position={"relative"}
-                    top={'15px'}
                     left={"-3px"}
                     size="sm"
                   />
@@ -237,7 +234,7 @@ const RegisterPage: React.FC = () => {
             <Button
               width="full"
               mt={8}
-              colorScheme={primaryColor}
+              colorScheme={"gray"}
               type="submit"
               size="lg"
               height="48px"
@@ -256,25 +253,25 @@ const RegisterPage: React.FC = () => {
               }}
               transition="all 0.2s"
             >
-              Register
+              Регистрация
             </Button>
           </form>
 
           <Box textAlign="center" pt={2}>
             <Text fontSize="sm" color={mutedTextColor}>
-              Already have an account?{' '}
+              Уже есть аккаунт?{' '}
               <Link to="/login">
-                <Button 
-                  as="span" 
-                  variant="link" 
+                <Button
+                  as="span"
+                  variant="link"
                   color={`${primaryColor}.500`}
                   fontWeight="semibold"
-                  _hover={{ 
+                  _hover={{
                     color: `${primaryColor}.600`,
                     textDecoration: 'underline',
                   }}
                 >
-                  Login
+                  Вход
                 </Button>
               </Link>
             </Text>

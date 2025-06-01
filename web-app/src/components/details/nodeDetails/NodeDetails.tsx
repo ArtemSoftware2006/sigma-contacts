@@ -1,7 +1,8 @@
 import React from 'react';
-import { Box, Heading, Text, Button } from '@chakra-ui/react';
+import { Box, Heading, Text, Button, Stack } from '@chakra-ui/react';
 import { Node } from "../../../types/node";
 import { SettingPanelState } from '../../../enums/settingPanelMode';
+import { useGraphStore } from '../../../hook/useGraphStore';
 
 interface NodeDetailsProps {
   node: Node;
@@ -16,32 +17,39 @@ const NodeDetails: React.FC<NodeDetailsProps> = ({
   onDeleteClick,
   onStateChange
 }) => {
+
+  const { graph, vitrualGraph ,loading, error, refresh, setGraph } = useGraphStore();
+
+  const isGroupNode = () : Node | undefined => {
+    return vitrualGraph?.nodes.find(virtualNode => virtualNode.id == node.id && virtualNode.isGroup)
+  }
+
   return (
     <>
-      {/* <Box>
-        <Text><strong>Id:</strong> {node.id}</Text>
-        <Text><strong>Название узла:</strong> {node.label}</Text>
-        <Text><strong>Размер:</strong> {node.size}</Text>
-        <Text><strong>Цвет:</strong> {node.color}</Text>
-        <Text><strong>Тип узла:</strong> {node.type}</Text>
-      </Box> */}
 
-      {node.contact ? (
+      {!isGroupNode() ? (
         <Box>
-          <Heading size="sm" mt={4}>Контакт</Heading>
-          <Text><strong>Id:</strong> {node.contact.contactId}</Text>
-          <Text><strong>Имя:</strong> {node.contact.name}</Text>
-          <Text><strong>Фамилия:</strong> {node.contact.surname}</Text>
-          <Text><strong>Телефон:</strong> {node.contact.phone}</Text>
-          <Text><strong>Telegram ID:</strong> {node.contact.telegramId}</Text>
+          <Heading size="sm" mt={4} mb={5}>Контакт</Heading>
+          <Stack>
+            <Text><strong>Имя:</strong> {node.contact.name}</Text>
+            <Text><strong>Фамилия:</strong> {node.contact.surname}</Text>
+            <Text><strong>Телефон:</strong> {node.contact.phone}</Text>
+            <Text><strong>Telegram:</strong> {node.contact.telegramId}</Text>
+            <Text><strong>VK:</strong> {node.contact.vkId}</Text>
+          </Stack>
         </Box>
       ) : (
-        <Heading size="sm" mt={4}>Добавьте Контакт</Heading>
+        <Box>
+          <Heading size="sm" mt={4} mb={5}>Узел группа</Heading>
+          <Stack>
+            <Text><strong>Имя группы:</strong> {node.label}</Text>
+          </Stack>
+        </Box>
       )}
 
       <Button
         colorScheme="blue"
-        mt={4}
+        mt={2}
         onClick={() => {
           if (onStateChange) {
             onEditClick(node);
@@ -52,13 +60,16 @@ const NodeDetails: React.FC<NodeDetailsProps> = ({
         Редактировать
       </Button>
 
-      <Button
-        colorScheme="red"
-        mt={4}
-        onClick={() => onDeleteClick(node)}
-      >
-        Удалить
-      </Button>
+      { !node.isGroup ? (
+        <Button
+          colorScheme="red"
+          mt={2}
+          onClick={() => onDeleteClick(node)}
+        >
+          Удалить
+        </Button>
+        ) : <></>
+      }
     </>
   );
 };

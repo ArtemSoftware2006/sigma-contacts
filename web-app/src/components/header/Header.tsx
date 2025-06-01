@@ -16,7 +16,7 @@ const Header = () => {
             _hover={{ textDecoration: 'none' }}
             color={"white"}
           >
-            Home
+            Главная
           </ChakraLink>
         </nav>
         <Profile>
@@ -26,7 +26,7 @@ const Header = () => {
             _hover={{ textDecoration: 'none' }}
             color={"white"}
           >
-            Profile
+            Профиль
           </ChakraLink>
         </Profile>
       </MainHeader>

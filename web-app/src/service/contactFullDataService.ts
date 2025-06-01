@@ -17,6 +17,8 @@ export class ContactFullDataService {
                 ...authHeaders
             };
 
+            info("Add Contact request\n ", addContact)
+
             const response = await axios.post<AddContactNodeResponse>(`${API_URL}/contact/`, addContact, { headers });
 
             info("Add Contact\n", response)

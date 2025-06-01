@@ -2,6 +2,7 @@ import axios, { AxiosError } from "axios";
 import { CreateUserGraphResponse, GraphData, GraphResponse, } from "../types/graph";
 import { ApiErrorResponse } from "../types/response";
 import { AuthService } from "./authService";
+import { info } from "../utils/logger";
 
 const API_URL = process.env.REACT_APP_API_URL
 
@@ -14,11 +15,15 @@ export class GraphService {
 
             localStorage.setItem("graphId", response.data.id);
 
+            info("GRAPH\n", response)
+
             return { nodes: response.data.nodes, edges: response.data.edges };
 
         } catch (error) {
             console.error(error)
             const axiosError = error as AxiosError<ApiErrorResponse>;
+
+            console.log(axiosError)
             throw new Error(axiosError.response?.data?.message || 'Get graph failed');
         }
     }
@@ -45,6 +50,8 @@ export class GraphService {
         } catch (error) {
             console.error(error)
             const axiosError = error as AxiosError<ApiErrorResponse>;
+
+            console.log(axiosError)
             throw new Error(axiosError.response?.data?.message || 'Create graph for user id failed');
         }
     }

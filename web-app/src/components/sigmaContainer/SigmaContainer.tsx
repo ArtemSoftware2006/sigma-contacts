@@ -50,6 +50,7 @@ const SigmaContainer: React.FC<SigmaContainerProps> = ({
       const nodeAttrs = graph.getNodeAttributes(nodeId);
 
       info("Vitrual Graph\n", vitrualGraph)
+      let isGroupNodeChange = vitrualGraph?.nodes.find(virtualNode => virtualNode.id == nodeId)?.isGroup
 
       const nodeChange: NodeChange = {
         id: nodeId,
@@ -60,7 +61,7 @@ const SigmaContainer: React.FC<SigmaContainerProps> = ({
         color: nodeAttrs.color,
         type: nodeAttrs.type,
         contact: vitrualGraph?.nodes.find(node => node.id == nodeId)?.contact || newEmptyContact(),
-        isSpecial: nodeAttrs.isSpecial || false,
+        isGroup: isGroupNodeChange || false,
         children: nodeAttrs.children || [],
         parentId: nodeAttrs.parentId || ''
       };

@@ -37,6 +37,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     parentId: "",
     x: 0,
     y: 0,
+    isGroup: false,
     contact: newEmptyContact()
   });
   const [editNode, setEditNode] = useState<Node>({
@@ -48,6 +49,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     type: node?.type || "",
     color: node?.color || "#666",
     parentId: node?.parentId || "",
+    isGroup: node?.isGroup || false,
     contact: node?.contact || newEmptyContact()
   });
 
@@ -60,11 +62,13 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     type: node?.type || "",
     color: node?.color || "#666",
     parentId: node?.parentId || "",
+    isGroup: node?.isGroup || false,
     contact: node?.contact || newEmptyContact()
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    console.log(name, value)
     setNewNode(prev => ({
       ...prev,
       [name]: name === 'size' ? Number(value) : value
@@ -100,9 +104,16 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
         parentId: "",
         x: 0,
         y: 0,
+        isGroup: false,
         contact: newEmptyContact()
       });
     }
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    console.log(name, checked)
+    setNewNode(prev => ({ ...prev, [name]: checked }));
   };
 
   const handleEditClick = () => {
@@ -128,13 +139,11 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
       flexDirection="column"
       gap={4}
     >
-      {/* <Heading as="h2" size="md" mb={4}>
-        {title}
-      </Heading> */}
 
       {settingPanelState == SettingPanelState.Add && (
         <AddNodeForm
           newNode={newNode}
+          onCheckboxChange={handleCheckboxChange}
           onInputChange={handleInputChange}
           onAddClick={handleAddClick}
         />

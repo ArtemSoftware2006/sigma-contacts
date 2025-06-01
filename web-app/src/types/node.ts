@@ -9,6 +9,7 @@ export interface Node {
   color: string;
   type: string;
   parentId: string
+  isGroup: boolean
   contact : Contact
 }
 
@@ -19,7 +20,7 @@ export interface AddContactNode {
   color: string,
   size: number,
   type: string,
-  isSpecial: boolean,
+  IsGroup: boolean,
   parentId: string,
   contact: Contact,
 }
@@ -32,7 +33,7 @@ export interface NodeChange {
   size: number;
   color: string;
   type: string;
-  isSpecial: boolean,
+  isGroup: boolean,
   contact: Contact,
   children: string[],
   parentId: string

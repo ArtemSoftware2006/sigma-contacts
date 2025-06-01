@@ -1,19 +1,47 @@
-// components/forms/addNodeForm/AddNodeForm.tsx
 import React from 'react';
-import { Button, FormControl, FormLabel, Heading, Input, Select, Stack } from '@chakra-ui/react';
+import {
+  Button,
+  Checkbox,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Select,
+  Stack
+} from '@chakra-ui/react';
 import { Node } from '../../../types/node';
 
 interface AddNodeFormProps {
   newNode: Omit<Node, 'id'>;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  onCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onAddClick: () => void;
 }
 
-const AddNodeForm: React.FC<AddNodeFormProps> = ({ newNode, onInputChange, onAddClick }) => {
+const AddNodeForm: React.FC<AddNodeFormProps> = ({
+  newNode,
+  onInputChange,
+  onCheckboxChange,
+  onAddClick
+}) => {
   return (
     <Stack spacing={4}>
-      <Heading size="sm" mt={4}>Добавление контакта</Heading>
-      
+      <Heading size="sm" mt={4}>
+        {newNode.isGroup ? 'Добавление группы' : 'Добавление контакта'}
+      </Heading>
+
+      <FormControl>
+        <Checkbox
+          name="isGroup"
+          isChecked={newNode.isGroup}
+          onChange={onCheckboxChange}
+          colorScheme="blue"        // отвечает за цвет галочки и рамки
+          size="md"
+        >
+          Это группа
+        </Checkbox>
+      </FormControl>
+
       <FormControl>
         <FormLabel>Название узла</FormLabel>
         <Input
@@ -21,18 +49,6 @@ const AddNodeForm: React.FC<AddNodeFormProps> = ({ newNode, onInputChange, onAdd
           value={newNode.label}
           onChange={onInputChange}
           placeholder="Введите название"
-        />
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Размер</FormLabel>
-        <Input
-          type="number"
-          name="size"
-          value={newNode.size}
-          onChange={onInputChange}
-          min="1"
-          max="50"
         />
       </FormControl>
 
@@ -47,19 +63,6 @@ const AddNodeForm: React.FC<AddNodeFormProps> = ({ newNode, onInputChange, onAdd
           p={0}
           border="none"
         />
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Тип узла</FormLabel>
-        <Select
-          name="type"
-          value={newNode.type}
-          onChange={onInputChange}
-        >
-          <option value="default">По умолчанию</option>
-          <option value="important">Важный</option>
-          <option value="group">Группа</option>
-        </Select>
       </FormControl>
 
       <Button

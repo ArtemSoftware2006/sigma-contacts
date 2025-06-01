@@ -5,6 +5,8 @@ import { info } from '../utils/logger'
 import { useUserStore } from './UserStore';
 import { UserService } from '../service/userService';
 import { UserUpdate } from '../types/user';
+import { AxiosError } from 'axios';
+import { ApiErrorResponse } from '../types/response';
 
 export const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
@@ -40,8 +42,9 @@ export const useAuth = () => {
 
       logout()
     } catch (err) {
-      const error = err as Error
-      setError(error.message || 'Registration failed');
+      const error = err as AxiosError<ApiErrorResponse>
+
+      setError(error.response?.data.message || 'Registration failed');
     } finally {
       setLoading(false);
     }

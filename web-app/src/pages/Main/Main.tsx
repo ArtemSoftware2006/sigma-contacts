@@ -17,6 +17,8 @@ import { SettingPanelState } from '../../enums/settingPanelMode';
 import { NodeService } from '../../service/nodeService';
 import { ContactFullDataService } from '../../service/contactFullDataService';
 import { GraphService } from '../../service/graphService';
+import AdminUserTable from '../../components/adminTable/AdminUserTable';
+import { isUserAdmin } from '../../types/user';
 
 const Main: FC = () => {
   const [isSettingsOpen, setSettingsOpen] = useState(false);
@@ -24,7 +26,7 @@ const Main: FC = () => {
   const [parentNodeId, setParentNodeId] = useState<string | null>(null)
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
 
-  const { graph, refresh  } = useGraphStore();
+  const { graph, vitrualGraph, refresh } = useGraphStore();
   const [graphVersion, setGraphVersion] = useState(0);
 
   const toggleSettings = () => setSettingsOpen(!isSettingsOpen);
@@ -42,7 +44,7 @@ const Main: FC = () => {
       size: editNode.size,
       parentId: editNode.parentId,
       contact: editNode.contact,
-      isSpecial: false,
+      isGroup: editNode.isGroup,
       children: []
     }
 
@@ -67,6 +69,18 @@ const Main: FC = () => {
     const edgeId = graph?.edges().find(edgeId => graph.target(edgeId) === deletedNode.id);
 
     if (edgeId == undefined) {
+      const virtualDeletedNode = vitrualGraph?.nodes.find(node => node.id == deletedNode.id)
+
+      info("VirtDelNode")
+      info(virtualDeletedNode)
+
+      if (virtualDeletedNode?.isGroup) {
+        console.log(`Удаление Группового узла. NodeId : `, deletedNode.id);
+        await NodeService.DeleteNode(deletedNode.id)
+        refresh()
+        setGraphVersion(graphVersion + 1)
+        return
+      }
       console.log(`Ребро не найдено! Его ID: ${edgeId}`);
       return
     }
@@ -87,9 +101,6 @@ const Main: FC = () => {
 
     const resposne = await ContactFullDataService.DeleteContact(contactDeleted)
     setGraphVersion(graphVersion + 1)
-
-    info(resposne)
-
     refresh()
   }
 
@@ -110,17 +121,22 @@ const Main: FC = () => {
       return
     }
 
+
+    let nodeSize = 10;
+    if (nodeData.isGroup) {
+      nodeSize = 20
+    }
     const addContactRequest: AddContactFullDataRequest = {
       graphId: `${graphId as string}`,
       node: {
         label: nodeData.label,
         x: Math.floor(Math.random() * 7) - 3,
         y: Math.floor(Math.random() * 7) - 3,
-        size: nodeData.size,
+        size: nodeSize,
         type: "circle",
         color: nodeData.color,
         contact: nodeData.contact,
-        isSpecial: false,
+        IsGroup: nodeData.isGroup,
         parentId: parentNodeId
       },
       edge: {
@@ -131,6 +147,9 @@ const Main: FC = () => {
       }
     }
 
+    console.log("Add Contact Request Main.tsx")
+    console.log(addContactRequest)
+
     const response = await ContactFullDataService.AddContact(addContactRequest)
     setGraphVersion(graphVersion + 1)
 
@@ -138,51 +157,57 @@ const Main: FC = () => {
   };
 
   return (
-    <MainWrapper>
-      <Content>
-        <MainArea>
-          <GraphComponent
-            key={graphVersion}
-            onNodeClick={(nodeData) => {
-              setSettingsOpen(true)
-              setSettingPanelState(SettingPanelState.View)
-              info(settingPanelState)
-              setSelectedNode(nodeData)
-              info(nodeData)
-            }}
-            onAddNode={(parentNodeId: string) => {
-              setSettingPanelState(SettingPanelState.Add)
-              info(settingPanelState)
-              setParentNodeId(parentNodeId)
-              setSettingsOpen(true)
-            }}
-          />
-        </MainArea>
+    <>
+      {!isUserAdmin() ? (
+        <MainWrapper>
+          <Content>
+            <MainArea>
+              <GraphComponent
+                key={graphVersion}
+                onNodeClick={(nodeData) => {
+                  setSettingsOpen(true)
+                  setSettingPanelState(SettingPanelState.View)
+                  info(settingPanelState)
+                  setSelectedNode(nodeData)
+                  info(nodeData)
+                }}
+                onAddNode={(parentNodeId: string) => {
+                  setSettingPanelState(SettingPanelState.Add)
+                  info(settingPanelState)
+                  setParentNodeId(parentNodeId)
+                  setSettingsOpen(true)
+                }}
+              />
+            </MainArea>
 
-        {isSettingsOpen && (
-          <SettingsPanel
-            node={selectedNode}
-            settingPanelState={settingPanelState}
-            onStateChange={setSettingPanelState}
-            onAddNode={handleAddNode}
-            onEditNode={handleEditNode}
-            onDeleteNode={handleDeleteNode}
-          />
-        )}
-      </Content>
+            {isSettingsOpen && (
+              <SettingsPanel
+                node={selectedNode}
+                settingPanelState={settingPanelState}
+                onStateChange={setSettingPanelState}
+                onAddNode={handleAddNode}
+                onEditNode={handleEditNode}
+                onDeleteNode={handleDeleteNode}
+              />
+            )}
+          </Content>
 
-      <ToggleButtonWrapper>
-        <IconButton
-          aria-label="Toggle settings"
-          icon={isSettingsOpen ? <CloseIcon /> : <SettingsIcon />}
-          onClick={toggleSettings}
-          colorScheme="teal"
-          size="lg"
-          borderRadius="full"
-          shadow="lg"
-        />
-      </ToggleButtonWrapper>
-    </MainWrapper>
+          <ToggleButtonWrapper>
+            <IconButton
+              aria-label="Toggle settings"
+              icon={isSettingsOpen ? <CloseIcon /> : <SettingsIcon />}
+              onClick={toggleSettings}
+              colorScheme="teal"
+              size="lg"
+              borderRadius="full"
+              shadow="lg"
+            />
+          </ToggleButtonWrapper>
+        </MainWrapper>
+      ) : (
+        <AdminUserTable/>
+      )}
+    </>
   );
 };
 

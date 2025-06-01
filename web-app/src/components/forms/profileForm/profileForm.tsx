@@ -13,7 +13,7 @@ export const ProfileForm = ({
   onSave: () => void;
   onCancel: () => void;
 }) => (
-  <Box w="100%">
+  <Box w="100%" marginLeft={100}>
     <VStack spacing={4} align="center">
       <FormControl>
         <FormLabel>Имя</FormLabel>

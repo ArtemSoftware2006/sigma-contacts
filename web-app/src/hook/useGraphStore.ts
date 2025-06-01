@@ -3,10 +3,11 @@ import Graph from 'graphology';
 import { GraphService } from '../service/graphService';
 import { info } from '../utils/logger'
 import { GraphData } from '../types/graph';
+import { toast } from 'react-toastify';
 
 export const useGraphStore = () => {
   const [graph, setGraph] = useState<Graph | null>(null);
-  const [vitrualGraph, setVirtualGraph] = useState<GraphData | null>(null);
+  const [vitrualGraph, setVirtualGraph] = useState<GraphData>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,16 +23,22 @@ export const useGraphStore = () => {
     
     try {
       const graphResponse : GraphData = await GraphService.fetchGraphData();
-
-      info("Load Graph (apiData)\n" + graphResponse)
+      info("Load Graph (apiData)\n")
+      info(graphResponse)
       setVirtualGraph(graphResponse)
-      info("VirtualGraph\n" + vitrualGraph)
 
       const newGraph = new Graph();
       graphResponse.nodes.forEach(node => {
         //TODO: Добавление узла в граф Graphology. Тут нет поля Contact, поэтому создаю Виртуальный граф
+
+        let nodeLabel = node.contact.name
+
+        if (graphResponse?.nodes.find(virtualNode => virtualNode.isGroup == true && virtualNode.id == node.id)) {
+          nodeLabel = node.label
+        }
+
         newGraph.addNode(node.id, {
-          label: node.label,
+          label: nodeLabel,
           x: node.x,
           y: node.y,
           size: node.size,
@@ -51,9 +58,13 @@ export const useGraphStore = () => {
       
       setGraph(newGraph);
     } catch (err) {
-      console.log((err as Error).message)
+      console.error("UseGraphStore Error ", (err as Error).message)
       if ((err as Error).message.includes("mongo")) {
-        await GraphService.CreateUserGraph()
+        try {
+          await GraphService.CreateUserGraph()          
+        } catch (error) {
+          console.error(error)
+        }
         return
       }
       setError(err instanceof Error ? err.message : 'Unknown error');

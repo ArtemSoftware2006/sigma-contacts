@@ -5,6 +5,7 @@ import {
   useToast,
   VStack,
   Stack,
+  Center,
 } from '@chakra-ui/react';
 import { useAuth } from '../../hook/useAuth';
 import { StatsCard } from '../../components/statsCard/statsCard';
@@ -83,7 +84,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <Box p={6} maxW="md" mx="auto" mt={10} display={"flex"} flexDirection={"row"}>
+    <Box p={6} maxW="md" mt={10} display={"flex"} flexDirection={"row"} minW={"100%"}>
       <Stack minWidth={"50vh"} alignItems={"center"}>
         <ProfileHeader {...profile} />
         <ProfileActions
@@ -92,7 +93,7 @@ const ProfilePage = () => {
         />
       </Stack>
 
-      <VStack spacing={6} align="center" borderLeft="1px solid black">
+      <VStack spacing={6} justifyItems={"center"} align="center" borderLeft="1px solid black">
         {isEditing ? (
           <ProfileForm
             profile={profile}
@@ -101,7 +102,7 @@ const ProfilePage = () => {
             onCancel={() => setIsEditing(false)}
           />
         ) : (
-          <Stack direction={"column"} alignItems={"center"} justifyContent={"center"}>
+          <Stack direction={"column"} alignItems={"center"} justifyContent={"center"} minW={"100%"}>
             <StatsCard />
           </Stack>
         )}
