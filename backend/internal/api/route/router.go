@@ -17,13 +17,14 @@ type Router struct {
 	ContactController   *controller.ContactFullDataController
 	NodeController      *controller.NodeController
 	AnalyticsController *controller.AnalyticsController
+	AdminController     *controller.AdminController
 	AppConfig           *config.AppConfig
 }
 
 func NewRouter(userController *controller.UserController, utilsController *controller.UtilsController,
 	AuthController *controller.AuthController, GraphController *controller.GraphController,
 	ContactController *controller.ContactFullDataController, NodeController *controller.NodeController,
-	AnalyticsController *controller.AnalyticsController,
+	AnalyticsController *controller.AnalyticsController, AdminController *controller.AdminController,
 	AppConfig *config.AppConfig) *Router {
 	return &Router{
 		UserController:      userController,
@@ -33,6 +34,7 @@ func NewRouter(userController *controller.UserController, utilsController *contr
 		ContactController:   ContactController,
 		NodeController:      NodeController,
 		AnalyticsController: AnalyticsController,
+		AdminController:     AdminController,
 		AppConfig:           AppConfig,
 	}
 }
@@ -84,11 +86,20 @@ func (r *Router) InitRoutes() *gin.Engine {
 	node.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret))
 
 	node.PUT("/:id", r.NodeController.Change)
+	node.DELETE("/:id", r.NodeController.DeleteNode)
+	node.POST("/addContact", r.NodeController.AddContactNode)
+	node.POST("/addGroup", r.NodeController.AddGroupNode)
 
 	analytics := api.Group("/analytics")
 	analytics.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret))
 
 	analytics.GET("/baseInfo", r.AnalyticsController.Add)
+
+	admin := api.Group("/admin")
+	admin.Use(middleware.AuthMiddleware(r.AppConfig.JwtSecret), middleware.RoleMiddleware(r.AppConfig.JwtSecret, "admin"))
+
+	admin.GET("/ping", r.AdminController.Ping)
+	admin.GET("/users", r.AdminController.GetAllUser)
 
 	return router
 }

@@ -17,6 +17,7 @@ type UserRepository interface {
 	Create(*dto_request.UserCreateRequest) (*dto_response.UserCreateResponse, error)
 	Update(*dto_request.UserUpdateRequest) (*dto_response.UserUpdateResponse, error)
 	Get(*dto_request.UserGetRequest) (*dto_response.UserInfoResponse, error)
+	GetAll() ([]*dto_response.UserInfoResponse, error)
 	FindByNickname(string) (*dto_response.UserGetResponse, error)
 	ExistsByNickname(nickname string) (bool, error)
 }

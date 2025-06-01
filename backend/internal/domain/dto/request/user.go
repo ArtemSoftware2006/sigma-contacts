@@ -4,6 +4,7 @@ type UserCreateRequest struct {
 	Name     string `json:"name" bson:"name"`
 	Surname  string `json:"surname" bson:"surname"`
 	Nickname string `json:"nickname" bson:"nickname"`
+	Role     string `json:"role"`
 	Password string `json:"password" bson:"password"`
 }
 

@@ -26,7 +26,7 @@ func (uc *UserController) GetMe(ctx *gin.Context) {
 	resp, err := uc.UserService.GetMe(&dto_request.UserGetRequest{Id: userId})
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		log.Error("UserController Error: ", err)
 		return
 	}
@@ -38,14 +38,14 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 	var request dto_request.UserCreateRequest
 
 	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
 	_, err := uc.UserService.Create(&request)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		log.Error("UserController Error: ", err)
 		return
 	}
@@ -61,7 +61,7 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 	var request dto_request.UserUpdateRequest
 
 	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -71,7 +71,7 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 	response, err := uc.UserService.Update(&request)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		log.Error("UserController Error: ", err)
 		return
 	}

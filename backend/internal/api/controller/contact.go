@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	dto_request "sigma-contacts/internal/domain/dto/request"
+
 	service_interface "sigma-contacts/internal/domain/interface/service"
 
 	"github.com/gin-gonic/gin"
@@ -21,13 +22,13 @@ func NewContactController(ContactFullDataService service_interface.ContactFullDa
 func (c *ContactFullDataController) Add(ctx *gin.Context) {
 	var req dto_request.AddContactFullDataRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
 	addContactResponse, err := c.ContactFullDataService.Add(&req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -37,13 +38,13 @@ func (c *ContactFullDataController) Add(ctx *gin.Context) {
 func (c *ContactFullDataController) Change(ctx *gin.Context) {
 	var req dto_request.ChangeContactFullDataRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
 	changeContactResponse, err := c.ContactFullDataService.Change(&req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -52,14 +53,15 @@ func (c *ContactFullDataController) Change(ctx *gin.Context) {
 
 func (c *ContactFullDataController) Delete(ctx *gin.Context) {
 	var req dto_request.DeleteContactFullDataRequest
+
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
 	changeContactResponse, err := c.ContactFullDataService.Delete(&req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 

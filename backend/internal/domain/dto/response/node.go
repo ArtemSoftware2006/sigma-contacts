@@ -7,3 +7,13 @@ type AddNodeResponse struct {
 type ChangeNodeResponse struct {
 	BaseResponse
 }
+
+type AddGroupNodeResponse struct {
+	BaseResponse
+	NodeID string `json:"nodeId"`
+}
+type AddContactNodeResponse struct {
+	BaseResponse
+	NodeID string `json:"nodeId"`
+	EdgeID string `json:"edgeId"`
+}

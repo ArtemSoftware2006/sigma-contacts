@@ -14,6 +14,7 @@ type UserGetBaseAuthResponse struct {
 type UserGetResponse struct {
 	Id       string `bson:"_id" json:"id"`
 	Name     string `bson:"name" json:"name"`
+	Role     string `bson:"role" json:"role"`
 	Surname  string `bson:"surname" json:"surname"`
 	Nickname string `json:"nickname"`
 	Password string `json:"password"`
@@ -22,5 +23,6 @@ type UserGetResponse struct {
 type UserInfoResponse struct {
 	Name     string `bson:"name" json:"name"`
 	Surname  string `bson:"surname" json:"surname"`
+	Role     string `bson:"role" json:"role"`
 	Nickname string `json:"nickname"`
 }

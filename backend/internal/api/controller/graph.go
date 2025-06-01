@@ -63,7 +63,7 @@ func (gc *GraphController) GetByUserId(ctx *gin.Context) {
 
 	resp, err := gc.GraphService.GetUserGraph(&req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -77,7 +77,7 @@ func (gc *GraphController) CreateUserGraph(ctx *gin.Context) {
 
 	var req dto_request.CreateGraphRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -87,7 +87,7 @@ func (gc *GraphController) CreateUserGraph(ctx *gin.Context) {
 
 	resp, err := gc.GraphService.CreateUserGraph(&req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 

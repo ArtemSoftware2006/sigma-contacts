@@ -88,14 +88,14 @@ func (gs *GraphService) CreateUserGraph(req *dto_request.CreateGraphRequest) (*d
 
 	//TODO: Инициазизацию начального узла (Или нескольких узлов и ребер) надо вынести в отдельную функцию/структуру
 	_, err = gs.NodeRepository.Add(response.GraphId, &dto_request.AddNodeRequest{
-		Label:     "Root",
-		X:         0,
-		Y:         0,
-		Size:      10,
-		Color:     "#FF5733",
-		Type:      "circle",
-		IsSpecial: true,
-		ParentID:  "",
+		Label:    "Root",
+		X:        0,
+		Y:        0,
+		Size:     10,
+		Color:    "#FF5733",
+		Type:     "circle",
+		IsGroup:  true,
+		ParentID: "",
 	})
 
 	if err != nil {

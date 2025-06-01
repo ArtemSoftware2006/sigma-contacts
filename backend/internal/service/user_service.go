@@ -19,7 +19,9 @@ func NewUserService(userRepository repository_interface.UserRepository) *UserSer
 }
 
 func (us *UserService) Create(user *dto_request.UserCreateRequest) (*dto_response.UserCreateResponse, error) {
+	user.Role = "user"
 	resp, err := us.UserRepository.Create(user)
+
 	if err != nil {
 		log.Error("UserService Error: ", err)
 		return nil, err
@@ -44,6 +46,19 @@ func (us *UserService) Update(user *dto_request.UserUpdateRequest) (*dto_respons
 
 	if err != nil {
 		log.Error("UserService, Error in updating user. Error: ", err)
+
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (us *UserService) GetAll() ([]*dto_response.UserInfoResponse, error) {
+	response, err := us.UserRepository.GetAll()
+	log.Info(response)
+
+	if err != nil {
+		log.Error("UserService, Error in geting all users. Error: ", err)
 
 		return nil, err
 	}

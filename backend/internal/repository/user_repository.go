@@ -140,3 +140,34 @@ func (ur *UserRepository) Update(user *dto_request.UserUpdateRequest) (*dto_resp
 		},
 	}, nil
 }
+
+func (ur *UserRepository) GetAll() ([]*dto_response.UserInfoResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), ur.dbTimeout)
+	defer cancel()
+
+	collection := ur.db.Collection("users")
+
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		log.Error("Ошибка при получении всех пользователей: ", err)
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var users []*dto_response.UserInfoResponse
+	for cursor.Next(ctx) {
+		var user dto_response.UserInfoResponse
+		if err := cursor.Decode(&user); err != nil {
+			log.Error("Ошибка декодирования пользователя: ", err)
+			continue
+		}
+		users = append(users, &user)
+	}
+
+	if err := cursor.Err(); err != nil {
+		log.Error("Ошибка при итерации курсора: ", err)
+		return nil, err
+	}
+
+	return users, nil
+}

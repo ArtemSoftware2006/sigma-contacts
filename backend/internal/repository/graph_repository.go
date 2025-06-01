@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sigma-contacts/internal/config"
 	dto_request "sigma-contacts/internal/domain/dto/request"
@@ -105,4 +106,31 @@ func (gr *GraphRepository) GetUserGraph(req *dto_request.GetUserGraphRequest) (*
 	}
 
 	return &response, nil
+}
+
+func (gr *GraphRepository) UpdateGraph(userId string, nodes []entities.Node, edges []entities.Edge) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"userId": userId}
+	update := bson.M{
+		"$set": bson.M{
+			"nodes": nodes,
+			"edges": edges,
+		},
+	}
+
+	collection := gr.db.Collection("graphs")
+
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	if result.MatchedCount == 0 {
+		log.Error("GraphRepository, Error graph not found. userId = ", userId)
+		return errors.New("граф для пользователя не найден")
+	}
+
+	return nil
 }

@@ -59,7 +59,7 @@ func Run() {
 
 	//Services
 	var UserService service_interface.UserService = service.NewUserService(UserRepository)
-	var NodeService service_interface.NodeService = service.NewNodeService(NodeRepository, &config)
+	var NodeService service_interface.NodeService = service.NewNodeService(NodeRepository, GraphRepository, &config)
 	var AuthService service_interface.AuthService = service.NewAuthService(UserRepository, PasswordValidator, LoginValidator, &config)
 	var GraphService service_interface.GraphService = service.NewGraphService(GraphRepository, UserRepository, NodeRepository)
 	var ContactService service_interface.ContactFullDataService = service.NewContactService(NodeRepository, EdgeRepository, GraphRepository, ContactRepository, &config)
@@ -73,9 +73,10 @@ func Run() {
 	var ContactController *controller.ContactFullDataController = controller.NewContactController(ContactService)
 	var NodeController *controller.NodeController = controller.NewNodeController(NodeService)
 	var AnalyticsController *controller.AnalyticsController = controller.NewAnalysticsController(AnalyticsService)
+	var AdminController *controller.AdminController = controller.NewAdminController(UserService)
 
 	//Routes
-	var router = router.NewRouter(UserController, UtilsController, AuthController, GraphController, ContactController, NodeController, AnalyticsController, &config)
+	var router = router.NewRouter(UserController, UtilsController, AuthController, GraphController, ContactController, NodeController, AnalyticsController, AdminController, &config)
 	routesEngine := router.InitRoutes()
 	routesEngine.Run()
 }
