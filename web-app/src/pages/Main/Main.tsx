@@ -105,15 +105,7 @@ const Main: FC = () => {
   }
 
   const handleAddNode = async (nodeData: Omit<Node, "id">) => {
-    if (!graph || !parentNodeId) return;
-
-    const newGraph = graph.copy();
-
-    // Проверка существования родительского узла
-    if (!newGraph.hasNode(parentNodeId)) {
-      console.error("Parent node does not exist:", parentNodeId);
-      return;
-    }
+    if (!graph) return;
 
     const graphId = GraphService.GetGraphId();
     if (graphId == typeof (Error)) {
@@ -121,28 +113,53 @@ const Main: FC = () => {
       return
     }
 
+    // Если выбрана категория — ищем группу по label в виртуальном графе
+    let resolvedParentId = parentNodeId;
+    let resolvedColor = nodeData.color;
 
-    let nodeSize = 10;
-    if (nodeData.isGroup) {
-      nodeSize = 20
+    if (nodeData.category && vitrualGraph) {
+      const groupNode = vitrualGraph.nodes.find(
+        (n) => n.isGroup && n.label === nodeData.category
+      );
+      if (groupNode) {
+        resolvedParentId = groupNode.id;
+        resolvedColor = groupNode.color;
+      }
     }
+
+    if (!resolvedParentId) {
+      console.error("Не задан родительский узел");
+      return;
+    }
+
+    if (!graph.hasNode(resolvedParentId)) {
+      console.error("Parent node does not exist:", resolvedParentId);
+      return;
+    }
+
+    const nodeSize = nodeData.isGroup ? 20 : 10;
+
+    // Для контакта label = contact.name (имя человека), для группы = nodeData.label
+    const nodeLabel = nodeData.isGroup ? nodeData.label : nodeData.contact.name;
+
     const addContactRequest: AddContactFullDataRequest = {
       graphId: `${graphId as string}`,
       node: {
-        label: nodeData.label,
+        label: nodeLabel,
         x: Math.floor(Math.random() * 7) - 3,
         y: Math.floor(Math.random() * 7) - 3,
         size: nodeSize,
         type: "circle",
-        color: nodeData.color,
+        color: resolvedColor,
         contact: nodeData.contact,
         IsGroup: nodeData.isGroup,
-        parentId: parentNodeId
+        parentId: resolvedParentId,
+        category: nodeData.category,
       },
       edge: {
-        source: parentNodeId,
+        source: resolvedParentId,
         label: "",
-        color: nodeData.color,
+        color: resolvedColor,
         size: 1,
       }
     }

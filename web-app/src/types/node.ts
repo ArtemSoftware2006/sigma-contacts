@@ -10,6 +10,7 @@ export interface Node {
   type: string;
   parentId: string
   isGroup: boolean
+  category: string
   contact : Contact
 }
 
@@ -22,6 +23,7 @@ export interface AddContactNode {
   type: string,
   IsGroup: boolean,
   parentId: string,
+  category: string,
   contact: Contact,
 }
 

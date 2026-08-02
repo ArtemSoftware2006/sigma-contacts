@@ -53,7 +53,7 @@ func (cr *ContactRepository) Add(graphId string, nodeId string, contact *dto_req
 		"contactId":     newContactId,
 		"surname":       contact.Surname,
 		"name":          contact.Name,
-		"phone":         contact.Name,
+		"phone":         contact.Phone,
 		"vkId":          contact.VkId,
 		"telegramId":    contact.TelegramId,
 		"whatsAppPhone": contact.WhatsAppPhone,

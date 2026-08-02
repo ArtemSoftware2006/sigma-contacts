@@ -18,6 +18,9 @@ type MockUserRepository struct {
 	CalledExistsByNickname bool
 	CalledUpdate           bool
 	CalledGet              bool
+	CalledGetAll           bool
+
+	GetAllFunc func() ([]*dto_response.UserInfoResponse, error)
 }
 
 func (m *MockUserRepository) FindByNickname(nickname string) (*dto_response.UserGetResponse, error) {
@@ -43,4 +46,9 @@ func (urs *MockUserRepository) Update(req *dto_request.UserUpdateRequest) (*dto_
 func (urs *MockUserRepository) Get(req *dto_request.UserGetRequest) (*dto_response.UserInfoResponse, error) {
 	urs.CalledGet = true
 	return urs.GetFunc(req)
+}
+
+func (urs *MockUserRepository) GetAll() ([]*dto_response.UserInfoResponse, error) {
+	urs.CalledGetAll = true
+	return urs.GetAllFunc()
 }

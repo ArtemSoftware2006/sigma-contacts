@@ -86,24 +86,26 @@ func (gs *GraphService) CreateUserGraph(req *dto_request.CreateGraphRequest) (*d
 		return nil, err
 	}
 
-	//TODO: Инициазизацию начального узла (Или нескольких узлов и ребер) надо вынести в отдельную функцию/структуру
-	_, err = gs.NodeRepository.Add(response.GraphId, &dto_request.AddNodeRequest{
-		Label:    "Root",
-		X:        0,
-		Y:        0,
-		Size:     10,
-		Color:    "#FF5733",
-		Type:     "circle",
-		IsGroup:  true,
-		ParentID: "",
-	})
-
-	if err != nil {
-		log.Println("GraphService, Error adding node in creating graph process")
-		return nil, err
+	for _, g := range defaultGroupNodes() {
+		_, err = gs.NodeRepository.Add(response.GraphId, &g)
+		if err != nil {
+			log.Error("GraphService, Error adding default group node: ", g.Label)
+			return nil, err
+		}
 	}
 
 	return response, nil
+}
+
+func defaultGroupNodes() []dto_request.AddNodeRequest {
+	return []dto_request.AddNodeRequest{
+		{Label: "Коллеги", Color: "#4A90D9", X: -300, Y: 0, Size: 15, Type: "circle", IsGroup: true},
+		{Label: "Родственники", Color: "#E74C3C", X: 300, Y: 0, Size: 15, Type: "circle", IsGroup: true},
+		{Label: "Школа", Color: "#2ECC71", X: 0, Y: -300, Size: 15, Type: "circle", IsGroup: true},
+		{Label: "Соседи", Color: "#F39C12", X: -200, Y: 250, Size: 15, Type: "circle", IsGroup: true},
+		{Label: "Университет", Color: "#9B59B6", X: 200, Y: 250, Size: 15, Type: "circle", IsGroup: true},
+		{Label: "Знакомые", Color: "#1ABC9C", X: 0, Y: 150, Size: 15, Type: "circle", IsGroup: true},
+	}
 }
 
 func (gs *GraphService) CheckGraphForUser(userId string, graph *dto_response.GetGraphResponse) bool {

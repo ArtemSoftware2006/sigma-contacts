@@ -11,6 +11,7 @@ type Node struct {
 	IsGroup  bool     `json:"isGroup" bson:"isGroup"`   // Является ли узел особенным
 	Children []string `json:"children" bson:"children"` // Дочерние узлы (если это особенный узел)
 	ParentId string   `json:"parentId" bson:"parentId"` // ID родительского узла (если это дочерний)
+	Category string   `json:"category" bson:"category"` // Категория контакта (Коллеги, Школа и т.д.)
 	Contact  Contact  `json:"contact" bson:"contact"`
 	Comment  string   `json:"comment" bson:"comment"`
 }

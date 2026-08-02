@@ -54,7 +54,8 @@ const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick, onAddNode 
           y: nodeAttributes.y,
           isGroup: nodeAttributes.isGroup,
           type: nodeAttributes.type,
-          parentId : nodeAttributes.parentId,
+          parentId: nodeAttributes.parentId,
+          category: vitrualGraph?.nodes.find(node => node.id == nodeId)?.category ?? '',
           contact: vitrualGraph?.nodes.find(node => node.id == nodeId)?.contact || newEmptyContact()
         };
         info("Click, virtualGraph\n")

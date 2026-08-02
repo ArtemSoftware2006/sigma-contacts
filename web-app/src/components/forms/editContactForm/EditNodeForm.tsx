@@ -34,8 +34,17 @@ const EditNodeForm: React.FC<EditNodeFormProps> = ({ editNode, onChange, onSave,
         />
       </FormControl>
 
-      {/* Добавление формы контакта */}
       <Heading size="md" mt={6}>Редактирование контакта</Heading>
+
+      <FormControl>
+        <FormLabel>Имя</FormLabel>
+        <Input
+          name={editNode.isGroup ? 'label' : 'contact.name'}
+          value={editNode.isGroup ? (editNode.label || '') : (editNode.contact?.name || '')}
+          onChange={onChange}
+          placeholder="Введите имя"
+        />
+      </FormControl>
 
       <FormControl>
         <FormLabel>Фамилия</FormLabel>
@@ -44,16 +53,6 @@ const EditNodeForm: React.FC<EditNodeFormProps> = ({ editNode, onChange, onSave,
           value={editNode.contact?.surname || ''}
           onChange={onChange}
           placeholder="Введите фамилию"
-        />
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Имя</FormLabel>
-        <Input
-          name="contact.name"
-          value={editNode.contact?.name || ''}
-          onChange={onChange}
-          placeholder="Введите имя"
         />
       </FormControl>
 
@@ -97,7 +96,6 @@ const EditNodeForm: React.FC<EditNodeFormProps> = ({ editNode, onChange, onSave,
         />
       </FormControl>
 
-      {/* Кнопки сохранения / отмены */}
       <Button colorScheme="blue" mt={2} onClick={onSave}>
         Сохранить изменения
       </Button>

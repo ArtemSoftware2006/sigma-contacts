@@ -3,13 +3,14 @@ package dto_request
 import "sigma-contacts/internal/domain/entities"
 
 type AddNodeRequest struct {
-	Label   string  `bson:"label" json:"label"`
-	X       float64 `bson:"x" json:"x"`
-	Y       float64 `bson:"y" json:"y"`
-	Size    float64 `bson:"size" json:"size"`
-	Color   string  `bson:"color" json:"color"`
-	Type    string  `bson:"type" json:"type"`
-	IsGroup bool    `bson:"isGroup" json:"isGroup"`
+	Label    string  `bson:"label" json:"label"`
+	X        float64 `bson:"x" json:"x"`
+	Y        float64 `bson:"y" json:"y"`
+	Size     float64 `bson:"size" json:"size"`
+	Color    string  `bson:"color" json:"color"`
+	Type     string  `bson:"type" json:"type"`
+	IsGroup  bool    `bson:"isGroup" json:"isGroup"`
+	Category string  `bson:"category" json:"category"`
 	// Children  []string `bson:"children,omitempty" json:"children,omitempty"`
 	Contact  entities.Contact `bson:"contact" json:"contact"`
 	ParentID string           `bson:"parentId" json:"parentId"`
@@ -23,7 +24,7 @@ type ChangeNodeRequest struct {
 	Size     float64          `bson:"size" json:"size"`
 	Color    string           `bson:"color" json:"color"`
 	Type     string           `bson:"type" json:"type"`
-	IsGroup  bool             `bson:"isGroup,omitempty" json:"isGroup,omitempty"`
+	IsGroup  bool             `bson:"isGroup" json:"isGroup"`
 	Children []string         `bson:"children,omitempty" json:"children,omitempty"`
 	Contact  entities.Contact `bson:"contact" json:"contact"`
 	ParentID *string          `bson:"parentId,omitempty" json:"parentId,omitempty"`

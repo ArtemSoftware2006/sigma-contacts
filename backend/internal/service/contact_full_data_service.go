@@ -40,7 +40,16 @@ func (cs *ContactFullDataService) Add(req *dto_request.AddContactFullDataRequest
 	}
 
 	log.Info("Add Contact")
-	contactResponse, err := cs.contactRepository.Add(req.GraphId, nodeResponse.NodeId, dto_request.EmptyAddContactRequest())
+	contactResponse, err := cs.contactRepository.Add(req.GraphId, nodeResponse.NodeId, &dto_request.AddContactRequest{
+		Name:          req.Node.Contact.Name,
+		Surname:       req.Node.Contact.Surname,
+		Phone:         req.Node.Contact.Phone,
+		VkId:          req.Node.Contact.VkId,
+		TelegramId:    req.Node.Contact.TelegramId,
+		WhatsAppPhone: req.Node.Contact.WhatsAppPhone,
+		Github:        req.Node.Contact.Github,
+		Comment:       req.Node.Contact.Comment,
+	})
 	if err != nil {
 		log.Error("ContactService: error adding contact", err)
 		return nil, err

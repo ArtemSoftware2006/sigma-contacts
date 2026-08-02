@@ -47,14 +47,15 @@ func (nr *NodeRepository) Add(graphId string, req *dto_request.AddNodeRequest) (
 	newNodeID := "n" + uuid.New().String()[:4]
 	newNode := bson.M{
 		"id":       newNodeID,
-		"label":    req.Label,    // предполагается, что label приходит в запросе
-		"x":        req.X,        // координата X
-		"y":        req.Y,        // координата Y
-		"size":     req.Size,     // размер узла
-		"color":    req.Color,    // цвет
-		"type":     req.Type,     // тип (например, "circle")
-		"isGroup":  req.IsGroup,  // флаг
-		"parentId": req.ParentID, // ID родителя (если есть)
+		"label":    req.Label,
+		"x":        req.X,
+		"y":        req.Y,
+		"size":     req.Size,
+		"color":    req.Color,
+		"type":     req.Type,
+		"isGroup":  req.IsGroup,
+		"category": req.Category,
+		"parentId": req.ParentID,
 		"contact":  entities.Contact{},
 	}
 

@@ -10,16 +10,29 @@ import { SettingPanelState } from '../../enums/settingPanelMode';
 import { Contact, newEmptyContact } from '../../types/contact';
 import EditNodeForm from '../forms/editContactForm/EditNodeForm';
 import NodeDetails from '../details/nodeDetails/NodeDetails';
-import AddNodeForm from '../forms/addNodeForm/AddNodeForm';
+import AddNodeForm, { CATEGORY_COLORS } from '../forms/addNodeForm/AddNodeForm';
 
 interface SettingsPanelProps {
   node: Node | null;
   settingPanelState: SettingPanelState;
-  onStateChange?: (newState: SettingPanelState) => void; // Колбэк для изменения состояния
-  onAddNode?: (nodeData: Omit<Node, 'id'>) => void; // Колбэк с данными нового узла
+  onStateChange?: (newState: SettingPanelState) => void;
+  onAddNode?: (nodeData: Omit<Node, 'id'>) => void;
   onEditNode?: (editNode: Node) => void;
   onDeleteNode?: (deletedNode: Node) => void;
 }
+
+const EMPTY_NEW_NODE: Omit<Node, 'id'> = {
+  label: '',
+  size: 10,
+  color: '#3182CE',
+  type: 'default',
+  parentId: '',
+  x: 0,
+  y: 0,
+  isGroup: false,
+  category: '',
+  contact: newEmptyContact(),
+};
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({
   node,
@@ -29,17 +42,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onEditNode,
   onDeleteNode
 }) => {
-  const [newNode, setNewNode] = useState<Omit<Node, 'id'>>({
-    label: '',
-    size: 10,
-    color: '#3182CE',
-    type: 'default',
-    parentId: "",
-    x: 0,
-    y: 0,
-    isGroup: false,
-    contact: newEmptyContact()
-  });
+  const [newNode, setNewNode] = useState<Omit<Node, 'id'>>(EMPTY_NEW_NODE);
+
   const [editNode, setEditNode] = useState<Node>({
     id: node?.id || "",
     label: node?.label || "",
@@ -50,6 +54,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     color: node?.color || "#666",
     parentId: node?.parentId || "",
     isGroup: node?.isGroup || false,
+    category: node?.category || "",
     contact: node?.contact || newEmptyContact()
   });
 
@@ -63,21 +68,34 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     color: node?.color || "#666",
     parentId: node?.parentId || "",
     isGroup: node?.isGroup || false,
+    category: node?.category || "",
     contact: node?.contact || newEmptyContact()
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    console.log(name, value)
-    setNewNode(prev => ({
-      ...prev,
-      [name]: name === 'size' ? Number(value) : value
-    }));
+    if (name.startsWith('contact.')) {
+      const field = name.split('.')[1] as keyof Contact;
+      setNewNode(prev => ({
+        ...prev,
+        contact: { ...prev.contact, [field]: value }
+      }));
+    } else {
+      setNewNode(prev => ({
+        ...prev,
+        [name]: name === 'size' ? Number(value) : value
+      }));
+    }
+  };
+
+  const handleCategoryChange = (category: string) => {
+    const color = CATEGORY_COLORS[category] ?? newNode.color;
+    setNewNode(prev => ({ ...prev, category, color }));
   };
 
   const handleInputChangeEditForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-  
+
     setEditNode(
       produce((draft: Node) => {
         if (name.startsWith('contact.')) {
@@ -95,24 +113,12 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   const handleAddClick = () => {
     if (onAddNode) {
       onAddNode(newNode);
-      // Сброс формы после добавления
-      setNewNode({
-        label: '',
-        size: 10,
-        color: '#3182CE',
-        type: 'default',
-        parentId: "",
-        x: 0,
-        y: 0,
-        isGroup: false,
-        contact: newEmptyContact()
-      });
+      setNewNode(EMPTY_NEW_NODE);
     }
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    console.log(name, checked)
     setNewNode(prev => ({ ...prev, [name]: checked }));
   };
 
@@ -145,6 +151,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           newNode={newNode}
           onCheckboxChange={handleCheckboxChange}
           onInputChange={handleInputChange}
+          onCategoryChange={handleCategoryChange}
           onAddClick={handleAddClick}
         />
       )}

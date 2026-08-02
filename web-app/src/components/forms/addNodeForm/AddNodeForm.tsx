@@ -11,10 +11,22 @@ import {
 } from '@chakra-ui/react';
 import { Node } from '../../../types/node';
 
+export const CATEGORY_COLORS: Record<string, string> = {
+  'Коллеги':      '#4A90D9',
+  'Родственники': '#E74C3C',
+  'Школа':        '#2ECC71',
+  'Соседи':       '#F39C12',
+  'Университет':  '#9B59B6',
+  'Знакомые':     '#1ABC9C',
+};
+
+export const CATEGORIES = Object.keys(CATEGORY_COLORS);
+
 interface AddNodeFormProps {
   newNode: Omit<Node, 'id'>;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onCategoryChange: (category: string) => void;
   onAddClick: () => void;
 }
 
@@ -22,8 +34,15 @@ const AddNodeForm: React.FC<AddNodeFormProps> = ({
   newNode,
   onInputChange,
   onCheckboxChange,
+  onCategoryChange,
   onAddClick
 }) => {
+  // Для контактного узла кнопка активна когда заполнено Имя
+  // Для группы — когда заполнено Название
+  const isAddDisabled = newNode.isGroup
+    ? !newNode.label.trim()
+    : !newNode.contact.name.trim();
+
   return (
     <Stack spacing={4}>
       <Heading size="sm" mt={4}>
@@ -35,22 +54,66 @@ const AddNodeForm: React.FC<AddNodeFormProps> = ({
           name="isGroup"
           isChecked={newNode.isGroup}
           onChange={onCheckboxChange}
-          colorScheme="blue"        // отвечает за цвет галочки и рамки
+          colorScheme="blue"
           size="md"
         >
           Это группа
         </Checkbox>
       </FormControl>
 
-      <FormControl>
-        <FormLabel>Название узла</FormLabel>
-        <Input
-          name="label"
-          value={newNode.label}
-          onChange={onInputChange}
-          placeholder="Введите название"
-        />
-      </FormControl>
+      {/* Поля для группы */}
+      {newNode.isGroup && (
+        <FormControl>
+          <FormLabel>Название группы</FormLabel>
+          <Input
+            name="label"
+            value={newNode.label}
+            onChange={onInputChange}
+            placeholder="Введите название группы"
+          />
+        </FormControl>
+      )}
+
+      {/* Поля для контакта */}
+      {!newNode.isGroup && (
+        <>
+          <FormControl>
+            <FormLabel>Категория</FormLabel>
+            <Select
+              name="category"
+              value={newNode.category}
+              onChange={(e) => onCategoryChange(e.target.value)}
+              placeholder="Выберите категорию"
+            >
+              {CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Имя</FormLabel>
+            <Input
+              name="contact.name"
+              value={newNode.contact.name}
+              onChange={onInputChange}
+              placeholder="Введите имя"
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Фамилия</FormLabel>
+            <Input
+              name="contact.surname"
+              value={newNode.contact.surname}
+              onChange={onInputChange}
+              placeholder="Введите фамилию"
+            />
+          </FormControl>
+        </>
+      )}
 
       <FormControl>
         <FormLabel>Цвет</FormLabel>
@@ -69,7 +132,7 @@ const AddNodeForm: React.FC<AddNodeFormProps> = ({
         colorScheme="blue"
         mt={4}
         onClick={onAddClick}
-        isDisabled={!newNode.label.trim()}
+        isDisabled={isAddDisabled}
       >
         Добавить узел
       </Button>

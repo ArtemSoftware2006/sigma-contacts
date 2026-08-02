@@ -44,6 +44,8 @@ export const useGraphStore = () => {
           size: node.size,
           color: node.color,
           type: node.type,
+          isGroup: node.isGroup,
+          parentId: node.parentId,
         });
       });
       

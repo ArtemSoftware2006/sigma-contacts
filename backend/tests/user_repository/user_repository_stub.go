@@ -33,3 +33,7 @@ func (urs *UserRepositoryStub) ExistsByNickname(nickname string) (bool, error) {
 func (urs *UserRepositoryStub) Update(*dto_request.UserUpdateRequest) (*dto_response.UserUpdateResponse, error) {
 	return &dto_response.UserUpdateResponse{}, nil
 }
+
+func (urs *UserRepositoryStub) GetAll() ([]*dto_response.UserInfoResponse, error) {
+	return []*dto_response.UserInfoResponse{}, nil
+}

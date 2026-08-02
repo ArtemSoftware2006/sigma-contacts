@@ -1,17 +1,28 @@
 services:
-  
+
   api:
     build:
       context: ./backend
       dockerfile: docker/Dockerfile
     ports:
       - "8080:8080"
-    env_file: ./backend/.env 
+    env_file: ./backend/.env
     depends_on:
       - database
     restart: unless-stopped
     volumes:
       - ./backend/logs:/app/logs
+    networks:
+      - sigma-contacts-net
+
+  web-app:
+    build:
+      context: ./web-app
+      dockerfile: docker/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
     networks:
       - sigma-contacts-net
 
@@ -22,8 +33,21 @@ services:
     volumes:
       - ./backend/db-data:/data/db
     ports:
-      - 8081:8081
       - 27017:27017
+    networks:
+      - sigma-contacts-net
+
+  mongo-express:
+    image: mongo-express
+    container_name: sigma-contacts-mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: database
+      ME_CONFIG_BASICAUTH: "false"
+    depends_on:
+      - database
     networks:
       - sigma-contacts-net
 
