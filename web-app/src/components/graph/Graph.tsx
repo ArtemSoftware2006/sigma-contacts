@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Sigma from 'sigma';
 import SigmaContainer from '../sigmaContainer/SigmaContainer';
 import { Node  } from '../../types/node';
 import { NodeContextMenu } from '../nodeContextMenu/NodeContextMenu';
-import { useGraphStore } from '../../hook/useGraphStore';
+import { useGraphStoreContext } from '../../context/GraphStoreContext';
 import { info } from '../../utils/logger'
 import './Graph.css';
 import { newEmptyContact } from '../../types/contact';
@@ -14,12 +14,55 @@ interface GraphComponentProps {
 }
 
 const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick, onAddNode }) => {
-  // Используем наш хук для управления состоянием графа
-  const { graph, vitrualGraph ,loading, error, refresh, setGraph } = useGraphStore();
+  const { graph, vitrualGraph, loading, error, refresh, setGraph, focusNodeId, setFocusNodeId, highlightedNodeIds } = useGraphStoreContext();
 
-  //refresh()
-  
+  const sigmaRef = useRef<Sigma | null>(null);
   const [initialAnimationDone, setInitialAnimationDone] = useState(false);
+
+  useEffect(() => {
+    if (!focusNodeId || !sigmaRef.current || !graph) return;
+    const sigma = sigmaRef.current;
+    if (!graph.hasNode(focusNodeId)) return;
+    const nodeDisplayData = sigma.getNodeDisplayData(focusNodeId);
+    if (!nodeDisplayData) return;
+    sigma.getCamera().animate(
+      { x: nodeDisplayData.x, y: nodeDisplayData.y, ratio: 0.3 },
+      { duration: 500 }
+    );
+    setFocusNodeId(null);
+  }, [focusNodeId, graph, setFocusNodeId]);
+
+  useEffect(() => {
+    if (!sigmaRef.current) return;
+    const sigma = sigmaRef.current;
+
+    if (!highlightedNodeIds || highlightedNodeIds.size === 0) {
+      sigma.setSetting('nodeReducer', null);
+      sigma.setSetting('edgeReducer', null);
+      sigma.refresh();
+      return;
+    }
+
+    sigma.setSetting('nodeReducer', (node: string, data: any) => {
+      if (highlightedNodeIds.has(node)) {
+        return { ...data, highlighted: true, size: data.size * 1.4, zIndex: 1 };
+      }
+      return { ...data, color: '#d0d0d0', label: '', size: data.size * 0.8, zIndex: 0 };
+    });
+
+    sigma.setSetting('edgeReducer', (edge: string, data: any) => {
+      if (!graph) return data;
+      const src = graph.source(edge);
+      const tgt = graph.target(edge);
+      if (highlightedNodeIds.has(src) || highlightedNodeIds.has(tgt)) {
+        return data;
+      }
+      return { ...data, color: '#e8e8e8', size: data.size * 0.5 };
+    });
+
+    sigma.refresh();
+  }, [highlightedNodeIds, graph]);
+
   const [contextMenu, setContextMenu] = useState<{
     show: boolean;
     x: number;
@@ -28,6 +71,7 @@ const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick, onAddNode 
   }>({ show: false, x: 0, y: 0, nodeId: null });
 
   const handleSigmaLoad = (sigma: Sigma) => {
+    sigmaRef.current = sigma;
     if (!initialAnimationDone) {
       sigma.getCamera().animate({
         x: 0.5,

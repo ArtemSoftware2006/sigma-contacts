@@ -4,7 +4,7 @@ import { SigmaContainerProps } from '../../types/sigma';
 import { NodeChange } from '../../types/node';
 import { NodeService } from '../../service/nodeService';
 import { GraphService } from '../../service/graphService';
-import { useGraphStore } from '../../hook/useGraphStore';
+import { useGraphStoreContext } from '../../context/GraphStoreContext';
 import { info } from '../../utils/logger';
 import { newEmptyContact } from '../../types/contact';
 
@@ -18,7 +18,7 @@ const SigmaContainer: React.FC<SigmaContainerProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const sigmaInstance = useRef<Sigma | null>(null);
   const draggedNode = useRef<string | null>(null);
-  const { vitrualGraph, refresh, setGraph } = useGraphStore();
+  const { vitrualGraph, refresh, setGraph } = useGraphStoreContext();
 
   useEffect(() => {
     if (!containerRef.current) return;

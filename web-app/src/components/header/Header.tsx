@@ -1,10 +1,66 @@
-import { Box, Heading, Flex, Spacer, Button, flexbox } from '@chakra-ui/react';
-import { Link as RouterLink } from 'react-router-dom';
-import { MainWrapper, MainHeader, Logo, MenuLink, Content, Profile, SettingsMenu, Footer, MainArea } from '../../styles/Main.styled';
+import React, { useState, useRef, useEffect } from 'react';
+import { Box, Input, List, ListItem, Text } from '@chakra-ui/react';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { MainHeader, Logo, Profile } from '../../styles/Main.styled';
 import { Link as ChakraLink } from '@chakra-ui/react';
-
+import { useGraphStoreContext } from '../../context/GraphStoreContext';
+import { Node } from '../../types/node';
 
 const Header = () => {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<Node[]>([]);
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+
+  const { vitrualGraph, setFocusNodeId, setHighlightedNodeIds } = useGraphStoreContext();
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Element)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSearch = (value: string) => {
+    setQuery(value);
+    if (!value.trim() || !vitrualGraph) {
+      setResults([]);
+      setOpen(false);
+      setHighlightedNodeIds(null);
+      return;
+    }
+    const q = value.toLowerCase();
+    const filtered = vitrualGraph.nodes.filter((node) => {
+      const name = (node.contact?.name || '').toLowerCase();
+      const surname = (node.contact?.surname || '').toLowerCase();
+      const label = (node.label || '').toLowerCase();
+      return name.includes(q) || surname.includes(q) || label.includes(q);
+    });
+    setResults(filtered);
+    setOpen(true);
+    setHighlightedNodeIds(filtered.length > 0 ? new Set(filtered.map((n) => n.id)) : null);
+  };
+
+  const handleSelect = (node: Node) => {
+    setQuery(node.isGroup ? node.label : `${node.contact?.name || ''} ${node.contact?.surname || ''}`.trim());
+    setOpen(false);
+    setResults([]);
+    if (location.pathname === '/') {
+      setHighlightedNodeIds(new Set([node.id]));
+      setFocusNodeId(node.id);
+    }
+  };
+
+  const getNodeLabel = (node: Node) => {
+    if (node.isGroup) return node.label;
+    const parts = [node.contact?.name, node.contact?.surname].filter(Boolean);
+    return parts.length > 0 ? parts.join(' ') : node.label;
+  };
+
   return (
     <Box bg="teal.500" color="white" display="flex" flexDirection={"column"}>
       <MainHeader>
@@ -19,6 +75,75 @@ const Header = () => {
             Главная
           </ChakraLink>
         </nav>
+
+        <Box ref={wrapperRef} position="relative" w="280px">
+          <Input
+            placeholder="Поиск по узлам..."
+            value={query}
+            onChange={(e) => handleSearch(e.target.value)}
+            onFocus={() => results.length > 0 && setOpen(true)}
+            bg="white"
+            color="gray.800"
+            size="sm"
+            borderRadius="md"
+            _placeholder={{ color: 'gray.400' }}
+          />
+          {open && results.length > 0 && (
+            <List
+              position="absolute"
+              top="100%"
+              left={0}
+              right={0}
+              mt="4px"
+              bg="white"
+              border="1px solid"
+              borderColor="gray.200"
+              borderRadius="md"
+              boxShadow="md"
+              zIndex={100}
+              maxH="240px"
+              overflowY="auto"
+            >
+              {results.map((node) => (
+                <ListItem
+                  key={node.id}
+                  px={3}
+                  py={2}
+                  cursor="pointer"
+                  _hover={{ bg: 'teal.50' }}
+                  onMouseDown={() => handleSelect(node)}
+                >
+                  <Text color="gray.800" fontSize="sm" fontWeight={node.isGroup ? 'bold' : 'normal'}>
+                    {getNodeLabel(node)}
+                  </Text>
+                  {!node.isGroup && node.contact?.phone && (
+                    <Text color="gray.500" fontSize="xs">{node.contact.phone}</Text>
+                  )}
+                </ListItem>
+              ))}
+            </List>
+          )}
+          {open && results.length === 0 && query.trim() && (
+            <Box
+              position="absolute"
+              top="100%"
+              left={0}
+              right={0}
+              mt="4px"
+              bg="white"
+              border="1px solid"
+              borderColor="gray.200"
+              borderRadius="md"
+              boxShadow="md"
+              zIndex={100}
+              px={3}
+              py={2}
+            >
+              <Text color="gray.500" fontSize="sm">Ничего не найдено</Text>
+            </Box>
+          )}
+        </Box>
+
         <Profile>
           <ChakraLink
             as={RouterLink}

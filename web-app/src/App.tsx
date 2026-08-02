@@ -7,6 +7,7 @@ import HomePage from './pages/Main/Main';
 import GraphPage from './pages/Main/Main';
 import ProfilePage from './pages/Profile/ProfilePage';
 import Layout from './components/layout/Layout';
+import { GraphStoreProvider } from './context/GraphStoreContext';
 
 const App: React.FC = () => {
   return (
@@ -17,7 +18,7 @@ const App: React.FC = () => {
         <Route path="/graph2" element={<GraphPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route element={<PrivateRoute />}>
-          <Route element={<Layout />}>
+          <Route element={<GraphStoreProvider><Layout /></GraphStoreProvider>}>
             <Route path="/" element={<HomePage />} />
             <Route path="/graph" element={<GraphPage />} />
             <Route path="/profile" element={<ProfilePage />} />

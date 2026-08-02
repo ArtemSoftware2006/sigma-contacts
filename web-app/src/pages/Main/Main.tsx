@@ -10,7 +10,7 @@ import { IconButton } from '@chakra-ui/react';
 import { SettingsIcon, CloseIcon } from '@chakra-ui/icons';
 import SettingsPanel from '../../components/settingPanel/SettingsPanel';
 import { Node, NodeChange } from '../../types/node'
-import { useGraphStore } from '../../hook/useGraphStore';
+import { useGraphStoreContext } from '../../context/GraphStoreContext';
 import { AddContactFullDataRequest, DeleteContactFullDataRequest } from '../../types/contactFullData';
 import { info } from '../../utils/logger'
 import { SettingPanelState } from '../../enums/settingPanelMode';
@@ -26,7 +26,7 @@ const Main: FC = () => {
   const [parentNodeId, setParentNodeId] = useState<string | null>(null)
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
 
-  const { graph, vitrualGraph, refresh } = useGraphStore();
+  const { graph, vitrualGraph, refresh } = useGraphStoreContext();
   const [graphVersion, setGraphVersion] = useState(0);
 
   const toggleSettings = () => setSettingsOpen(!isSettingsOpen);
