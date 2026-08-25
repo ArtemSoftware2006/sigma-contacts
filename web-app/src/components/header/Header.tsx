@@ -17,6 +17,7 @@ const Header = () => {
   const [results, setResults] = useState<Node[]>([]);
   const [open, setOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeTag, setActiveTag] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
@@ -33,23 +34,43 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const clearFilters = () => {
+    setActiveCategory(null);
+    setActiveTag(null);
+    setHighlightedNodeIds(null);
+  };
+
   const handleCategoryFilter = (cat: string) => {
     if (!vitrualGraph) return;
-    if (activeCategory === cat) {
-      setActiveCategory(null);
-      setHighlightedNodeIds(null);
-      return;
-    }
+    if (activeCategory === cat) { clearFilters(); return; }
     setActiveCategory(cat);
-    setQuery('');
-    setResults([]);
-    setOpen(false);
+    setActiveTag(null);
+    setQuery(''); setResults([]); setOpen(false);
     const matched = vitrualGraph.nodes.filter((n) => !n.isGroup && n.category === cat);
     setHighlightedNodeIds(matched.length > 0 ? new Set(matched.map((n) => n.id)) : null);
   };
 
+  const handleTagFilter = (tag: string) => {
+    if (!vitrualGraph) return;
+    if (activeTag === tag) { clearFilters(); return; }
+    setActiveTag(tag);
+    setActiveCategory(null);
+    setQuery(''); setResults([]); setOpen(false);
+    const matched = vitrualGraph.nodes.filter((n) => !n.isGroup && (n.contact?.tags || []).includes(tag));
+    setHighlightedNodeIds(matched.length > 0 ? new Set(matched.map((n) => n.id)) : null);
+  };
+
+  const allTags = Array.from(
+    new Set(
+      (vitrualGraph?.nodes || [])
+        .filter((n) => !n.isGroup)
+        .flatMap((n) => n.contact?.tags || [])
+    )
+  ).sort();
+
   const handleSearch = (value: string) => {
     setActiveCategory(null);
+    setActiveTag(null);
     setQuery(value);
     if (!value.trim() || !vitrualGraph) {
       setResults([]);
@@ -190,14 +211,16 @@ const Header = () => {
             borderColor="whiteAlpha.600"
             onClick={() => setDrawerOpen(true)}
           >
-            Расширенный фильтр{activeCategory ? ` · ${activeCategory}` : ''}
+            Расширенный фильтр
+            {activeCategory ? ` · ${activeCategory}` : ''}
+            {activeTag ? ` · #${activeTag}` : ''}
           </Button>
-          {activeCategory && (
+          {(activeCategory || activeTag) && (
             <Text
               fontSize="xs"
               color="whiteAlpha.800"
               cursor="pointer"
-              onClick={() => { setActiveCategory(null); setHighlightedNodeIds(null); }}
+              onClick={clearFilters}
               _hover={{ color: 'white' }}
             >
               Сбросить ×
@@ -220,9 +243,10 @@ const Header = () => {
         flexDirection="column"
         pt={4}
         px={4}
+        pb={4}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-          <Heading size="sm" color="gray.700">Фильтр по категориям</Heading>
+          <Heading size="sm" color="gray.700">Расширенный фильтр</Heading>
           <IconButton
             aria-label="Закрыть фильтр"
             icon={<CloseIcon />}
@@ -232,36 +256,71 @@ const Header = () => {
           />
         </Box>
 
-        <Wrap spacing={3}>
-          {Object.entries(CATEGORY_COLORS).map(([cat, color]) => (
-            <WrapItem key={cat}>
-              <Tag
-                size="md"
-                borderRadius="full"
-                cursor="pointer"
-                bg={activeCategory === cat ? color : 'gray.100'}
-                color={activeCategory === cat ? 'white' : 'gray.700'}
-                border="2px solid"
-                borderColor={color}
-                onClick={() => handleCategoryFilter(cat)}
-                _hover={{ bg: color, color: 'white' }}
-                transition="all 0.15s"
-                px={3}
-                py={1}
-              >
-                <TagLabel fontWeight="medium">{cat}</TagLabel>
-              </Tag>
-            </WrapItem>
-          ))}
-        </Wrap>
+        <Box overflowY="auto" flex="1">
+          <Text fontSize="xs" fontWeight="bold" color="gray.500" mb={2} textTransform="uppercase">
+            Категории
+          </Text>
+          <Wrap spacing={2} mb={5}>
+            {Object.entries(CATEGORY_COLORS).map(([cat, color]) => (
+              <WrapItem key={cat}>
+                <Tag
+                  size="md"
+                  borderRadius="full"
+                  cursor="pointer"
+                  bg={activeCategory === cat ? color : 'gray.100'}
+                  color={activeCategory === cat ? 'white' : 'gray.700'}
+                  border="2px solid"
+                  borderColor={color}
+                  onClick={() => handleCategoryFilter(cat)}
+                  _hover={{ bg: color, color: 'white' }}
+                  transition="all 0.15s"
+                  px={3}
+                  py={1}
+                >
+                  <TagLabel fontWeight="medium">{cat}</TagLabel>
+                </Tag>
+              </WrapItem>
+            ))}
+          </Wrap>
 
-        {activeCategory && (
+          <Text fontSize="xs" fontWeight="bold" color="gray.500" mb={2} textTransform="uppercase">
+            Теги
+          </Text>
+          {allTags.length === 0 ? (
+            <Text fontSize="sm" color="gray.400">Нет тегов в графе</Text>
+          ) : (
+            <Wrap spacing={2}>
+              {allTags.map((tag) => (
+                <WrapItem key={tag}>
+                  <Tag
+                    size="md"
+                    borderRadius="full"
+                    cursor="pointer"
+                    bg={activeTag === tag ? 'blue.500' : 'gray.100'}
+                    color={activeTag === tag ? 'white' : 'gray.700'}
+                    border="2px solid"
+                    borderColor="blue.300"
+                    onClick={() => handleTagFilter(tag)}
+                    _hover={{ bg: 'blue.500', color: 'white' }}
+                    transition="all 0.15s"
+                    px={3}
+                    py={1}
+                  >
+                    <TagLabel fontWeight="medium">#{tag}</TagLabel>
+                  </Tag>
+                </WrapItem>
+              ))}
+            </Wrap>
+          )}
+        </Box>
+
+        {(activeCategory || activeTag) && (
           <Button
-            mt={6}
+            mt={4}
             size="sm"
             variant="outline"
             colorScheme="gray"
-            onClick={() => { setActiveCategory(null); setHighlightedNodeIds(null); }}
+            onClick={clearFilters}
           >
             Сбросить фильтр ×
           </Button>
