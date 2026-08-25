@@ -109,6 +109,69 @@ cd backend && go test ./...
 - Password: min 9 chars, uppercase + lowercase + 2+ special chars from `!/?$&@%`
 - Login: max 15 chars
 
+## Conventions
+
+### Backend (Go)
+
+**Naming:**
+- Structs, interfaces, methods: `PascalCase`
+- Files: `snake_case` (e.g., `user_repository.go`, `auth_service.go`)
+- Variables, params: `camelCase` (e.g., `graphId`, `dbTimeout`)
+- Layers: `XxxRepository`, `XxxService`, `XxxController`
+
+**DTOs:**
+- Request: `AddXxxRequest`, `ChangeXxxRequest`, `GetXxxRequest`, `DeleteXxxRequest`
+- Response: `AddXxxResponse`, `ChangeXxxResponse`, `GetXxxResponse`
+- Use `Add` (not `Create`), `Change` (not `Update`)
+- Grouped requests: `AddXxxFullDataRequest` (node + edge + contact in one)
+
+**JSON / BSON tags:** camelCase on all struct fields (`json:"graphId"`, `bson:"parentId"`)
+
+**Error handling:** check `err != nil` → `log.Error(...)` → `return nil, err`
+
+**Routes:** `/api/<resource>/` — lowercase, use action verbs in path when REST isn't enough (`/api/node/addContact`, `/api/node/addGroup`)
+
+**MongoDB collections:** lowercase plural (`users`, `graphs`)
+
+**MongoDB field names:** camelCase, matching JSON tags (`contactId`, `isGroup`, `parentId`)
+
+**ID fields:** embedded doc IDs named `<entity>Id` (e.g., `contactId`, `nodeId`, `edgeId`). Primary key is `_id`.
+
+---
+
+### Frontend (React/TypeScript)
+
+**Files:**
+- Components: `PascalCase.tsx` (e.g., `Header.tsx`, `EditNodeForm.tsx`)
+- Hooks: `camelCase.ts` with `use` prefix (e.g., `useGraphStore.ts`)
+- Services: `camelCase.ts` (e.g., `nodeService.ts`, `graphService.ts`)
+- Types: `camelCase.ts` (e.g., `node.ts`, `contact.ts`)
+
+**Components:** PascalCase, each in its own folder under `components/`
+
+**Hooks:** `useXxx` — return state + actions
+
+**Services:** exported as named class or const object with static methods
+
+**Interfaces:** `interface Xxx` (no `I` prefix), e.g., `Node`, `Contact`, `GraphData`
+
+**Enums:** `PascalCase` name, `UPPER_CASE` values (e.g., `SettingPanelState.ADD`)
+
+**State vars:** camelCase; booleans with `is` prefix (`isGroup`, `isOpen`)
+
+**API payload fields:** camelCase, must match backend JSON tags exactly
+
+**Context:** `XxxContext.tsx` + `useXxxContext()` hook, `XxxProvider` wraps app
+
+---
+
+### Known Inconsistencies (do not replicate)
+
+- `vitrualGraph` typo in `useGraphStore` — should be `virtualGraph` (not fixed yet to avoid breaking changes)
+- Some component files use `camelCase.tsx` (e.g., `profileForm.tsx`) — new components must use `PascalCase.tsx`
+- Services inconsistently exported as class vs const object — prefer const object with static methods for new services
+- `Node.ID` / `Edge.ID` uses Go `ID` (uppercase) but `Contact.Id` uses `Id` — new entities: use `Id`
+
 ## Known Issues
 
 1. `tests/user_repository/user_repository_stub.go` — missing `GetAll()` method → tests don't compile
