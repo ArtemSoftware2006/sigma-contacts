@@ -128,27 +128,39 @@ const Main: FC = () => {
       return
     }
 
-    // Если выбрана категория — ищем группу по label в виртуальном графе
-    let resolvedParentId = parentNodeId;
+    // edgeSource — откуда идёт ребро (кликнутый узел)
+    // nodeGroupId — к какой группе относится новый узел (для статистики и цвета)
+    let edgeSource = parentNodeId;
+    let nodeGroupId = parentNodeId;
     let resolvedColor = nodeData.color;
 
-    if (nodeData.category && vitrualGraph) {
-      const groupNode = vitrualGraph.nodes.find(
-        (n) => n.isGroup && n.label === nodeData.category
-      );
+    const clickedVirtualNode = vitrualGraph?.nodes.find(n => n.id === parentNodeId);
+
+    if (clickedVirtualNode && !clickedVirtualNode.isGroup) {
+      // Добавление от контактного узла — наследуем группу и цвет от его родителя-группы
+      const parentGroup = vitrualGraph?.nodes.find(n => n.id === clickedVirtualNode.parentId && n.isGroup);
+      if (parentGroup) {
+        nodeGroupId = parentGroup.id;
+        resolvedColor = parentGroup.color;
+      }
+      // edgeSource остаётся = контактный узел (ребро идёт от контакта к новому контакту)
+    } else if (nodeData.category && vitrualGraph) {
+      // Категория переопределяет группу
+      const groupNode = vitrualGraph.nodes.find(n => n.isGroup && n.label === nodeData.category);
       if (groupNode) {
-        resolvedParentId = groupNode.id;
+        edgeSource = groupNode.id;
+        nodeGroupId = groupNode.id;
         resolvedColor = groupNode.color;
       }
     }
 
-    if (!resolvedParentId) {
+    if (!edgeSource) {
       console.error("Не задан родительский узел");
       return;
     }
 
-    if (!graph.hasNode(resolvedParentId)) {
-      console.error("Parent node does not exist:", resolvedParentId);
+    if (!graph.hasNode(edgeSource)) {
+      console.error("Source node does not exist:", edgeSource);
       return;
     }
 
@@ -168,11 +180,11 @@ const Main: FC = () => {
         color: resolvedColor,
         contact: nodeData.contact,
         IsGroup: nodeData.isGroup,
-        parentId: resolvedParentId,
+        parentId: nodeGroupId ?? '',
         category: nodeData.category,
       },
       edge: {
-        source: resolvedParentId,
+        source: edgeSource,
         label: "",
         color: resolvedColor,
         size: edgeWeight,

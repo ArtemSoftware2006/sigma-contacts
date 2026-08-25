@@ -3,12 +3,10 @@ import {
   Box,
   Button,
   useToast,
-  VStack,
   Stack,
-  Center,
+  Flex,
 } from '@chakra-ui/react';
 import { useAuth } from '../../hook/useAuth';
-import { StatsCard } from '../../components/statsCard/statsCard';
 import { Profile } from '../../types/profile';
 import { ProfileForm } from '../../components/forms/profileForm/profileForm';
 import { ProfileHeader } from '../../components/profileHeader/profileHeader';
@@ -16,8 +14,8 @@ import { info } from '../../utils/logger';
 import { UserService } from '../../service/userService';
 import { ApiErrorResponse } from '../../types/response';
 import { UserUpdate } from '../../types/user';
+import AnalyticsPanel from '../../components/analyticsPanel/AnalyticsPanel';
 
-// Компонент действий профиля
 const ProfileActions = ({
   onEdit,
   onLogout
@@ -25,20 +23,18 @@ const ProfileActions = ({
   onEdit: () => void;
   onLogout: () => void;
 }) => (
-  <Stack direction="column" spacing={4} width="200px">
-    <Button colorScheme="blue" onClick={onEdit}>
+  <Stack direction="column" spacing={3} width="180px">
+    <Button colorScheme="blue" size="sm" onClick={onEdit}>
       Редактировать профиль
     </Button>
-    <Button variant="outline" onClick={onLogout}>
+    <Button variant="outline" size="sm" onClick={onLogout}>
       Выйти
     </Button>
   </Stack>
 );
 
-// Основной компонент профиля
 const ProfilePage = () => {
-
-  const user : UserUpdate = JSON.parse(localStorage.getItem('user') || "")
+  const user: UserUpdate = JSON.parse(localStorage.getItem('user') || '{}');
 
   const [profile, setProfile] = useState<Profile>({
     firstName: user.name,
@@ -52,48 +48,43 @@ const ProfilePage = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProfile(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setProfile(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSave = async () => {
-
-    //TODO: Обработать аналогично остальные ошибки по этому примеру
-    // Но выводить модалку или toast alerts об ошибке, а не в консоль писать
     try {
       const response = await UserService.update({
         name: profile.firstName,
         surname: profile.lastName,
-      })
-
-      info(response)
-      
-      //TODO: стоит вынести логику в отдельный хук или класс
-      user.name = profile.firstName
-      user.surname = profile.lastName
-
-      localStorage.setItem("user", JSON.stringify(user))
-
+      });
+      info(response);
+      user.name = profile.firstName;
+      user.surname = profile.lastName;
+      localStorage.setItem('user', JSON.stringify(user));
       setIsEditing(false);
+      toast({ title: 'Профиль обновлён', status: 'success', duration: 2000 });
     } catch (error) {
       const axiosError = error as ApiErrorResponse;
-      console.error(axiosError.message)
+      console.error(axiosError.message);
     }
   };
 
   return (
-    <Box p={6} maxW="md" mt={10} display={"flex"} flexDirection={"row"} minW={"100%"}>
-      <Stack minWidth={"50vh"} alignItems={"center"}>
+    <Flex height="calc(100vh - 80px)" overflow="hidden">
+      {/* ── Sidebar ── */}
+      <Box
+        width="240px"
+        flexShrink={0}
+        borderRight="1px solid"
+        borderColor="gray.200"
+        bg="white"
+        p={6}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        gap={6}
+      >
         <ProfileHeader {...profile} />
-        <ProfileActions
-          onEdit={() => setIsEditing(true)}
-          onLogout={logout}
-        />
-      </Stack>
-
-      <VStack spacing={6} justifyItems={"center"} align="center" borderLeft="1px solid black">
         {isEditing ? (
           <ProfileForm
             profile={profile}
@@ -102,12 +93,18 @@ const ProfilePage = () => {
             onCancel={() => setIsEditing(false)}
           />
         ) : (
-          <Stack direction={"column"} alignItems={"center"} justifyContent={"center"} minW={"100%"}>
-            <StatsCard />
-          </Stack>
+          <ProfileActions
+            onEdit={() => setIsEditing(true)}
+            onLogout={logout}
+          />
         )}
-      </VStack>
-    </Box>
+      </Box>
+
+      {/* ── Analytics ── */}
+      <Box flex="1" overflowY="auto">
+        <AnalyticsPanel />
+      </Box>
+    </Flex>
   );
 };
 

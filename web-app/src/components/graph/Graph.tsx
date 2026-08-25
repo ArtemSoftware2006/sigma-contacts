@@ -114,12 +114,8 @@ const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick, onAddNode 
       const nodeAttributes = sigma.getGraph().getNodeAttributes(node);
       //info("Правая кнопка по узлу:", node, nodeAttributes);
 
-      let isShowContextMenu = false
-      if (vitrualGraph?.nodes.find(virtualNode => virtualNode.id == node && virtualNode.isGroup)) {
-        isShowContextMenu= true
-      }
       setContextMenu({
-        show: isShowContextMenu,
+        show: true,
         x: event.x - 120,
         y: event.y + 20,
         nodeId: node
