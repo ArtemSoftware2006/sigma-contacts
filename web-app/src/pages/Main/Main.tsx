@@ -10,8 +10,9 @@ import { IconButton } from '@chakra-ui/react';
 import { SettingsIcon, CloseIcon } from '@chakra-ui/icons';
 import SettingsPanel from '../../components/settingPanel/SettingsPanel';
 import { Node, NodeChange } from '../../types/node'
+import { Edge } from '../../types/edge';
 import { useGraphStoreContext } from '../../context/GraphStoreContext';
-import { AddContactFullDataRequest, DeleteContactFullDataRequest } from '../../types/contactFullData';
+import { AddContactFullDataRequest, ChangeContactFullDataRequest, DeleteContactFullDataRequest } from '../../types/contactFullData';
 import { info } from '../../utils/logger'
 import { SettingPanelState } from '../../enums/settingPanelMode';
 import { NodeService } from '../../service/nodeService';
@@ -25,14 +26,21 @@ const Main: FC = () => {
   const [settingPanelState, setSettingPanelState] = useState(SettingPanelState.View);
   const [parentNodeId, setParentNodeId] = useState<string | null>(null)
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
 
   const { graph, vitrualGraph, refresh } = useGraphStoreContext();
   const [graphVersion, setGraphVersion] = useState(0);
 
   const toggleSettings = () => setSettingsOpen(!isSettingsOpen);
 
-  const handleEditNode = async (editNode: Node) => {
+  const handleEditNode = async (editNode: Node, edgeType: string, edgeWeight: number) => {
     setSettingPanelState(SettingPanelState.Edit)
+
+    const graphId = GraphService.GetGraphId();
+    if (graphId == typeof (Error)) {
+      info(graphId.toString())
+      return
+    }
 
     const nodeChange: NodeChange = {
       id: editNode.id,
@@ -49,17 +57,23 @@ const Main: FC = () => {
       children: []
     }
 
-    const graphId = GraphService.GetGraphId();
-    if (graphId == typeof (Error)) {
-      info(graphId.toString())
-      return
+    if (!editNode.isGroup && selectedEdge?.edgeId) {
+      const changeRequest: ChangeContactFullDataRequest = {
+        graphId: graphId as string,
+        node: nodeChange,
+        edge: {
+          ...selectedEdge,
+          type: edgeType,
+          weight: edgeWeight,
+          size: edgeWeight,
+        }
+      }
+      await ContactFullDataService.ChangeContact(changeRequest)
+    } else {
+      await NodeService.ChangeNode(graphId as string, nodeChange)
     }
 
-    const resposne = await NodeService.ChangeNode(graphId as string, nodeChange)
     setGraphVersion(graphVersion + 1)
-
-    info(resposne)
-
     refresh()
   }
 
@@ -105,7 +119,7 @@ const Main: FC = () => {
     refresh()
   }
 
-  const handleAddNode = async (nodeData: Omit<Node, "id">) => {
+  const handleAddNode = async (nodeData: Omit<Node, "id">, edgeType: string = '', edgeWeight: number = 1) => {
     if (!graph) return;
 
     const graphId = GraphService.GetGraphId();
@@ -161,7 +175,9 @@ const Main: FC = () => {
         source: resolvedParentId,
         label: "",
         color: resolvedColor,
-        size: 1,
+        size: edgeWeight,
+        type: edgeType,
+        weight: edgeWeight,
       }
     }
 
@@ -185,8 +201,9 @@ const Main: FC = () => {
                 onNodeClick={(nodeData) => {
                   setSettingsOpen(true)
                   setSettingPanelState(SettingPanelState.View)
-                  info(settingPanelState)
                   setSelectedNode(nodeData)
+                  const edge = vitrualGraph?.edges.find(e => e.target === nodeData.id) || null;
+                  setSelectedEdge(edge);
                   info(nodeData)
                 }}
                 onAddNode={(parentNodeId: string) => {
@@ -201,6 +218,7 @@ const Main: FC = () => {
             {isSettingsOpen && (
               <SettingsPanel
                 node={selectedNode}
+                nodeEdge={selectedEdge}
                 settingPanelState={settingPanelState}
                 onStateChange={setSettingPanelState}
                 onAddNode={handleAddNode}

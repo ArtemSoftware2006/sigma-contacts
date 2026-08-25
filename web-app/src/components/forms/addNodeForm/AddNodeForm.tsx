@@ -7,9 +7,15 @@ import {
   Heading,
   Input,
   Select,
-  Stack
+  Stack,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from '@chakra-ui/react';
 import { Node } from '../../../types/node';
+import { EDGE_TYPES } from '../../../types/edge';
 
 export const CATEGORY_COLORS: Record<string, string> = {
   'Коллеги':      '#4A90D9',
@@ -25,17 +31,25 @@ export const CATEGORIES = Object.keys(CATEGORY_COLORS);
 
 interface AddNodeFormProps {
   newNode: Omit<Node, 'id'>;
+  edgeType: string;
+  edgeWeight: number;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onCategoryChange: (category: string) => void;
+  onEdgeTypeChange: (v: string) => void;
+  onEdgeWeightChange: (v: number) => void;
   onAddClick: () => void;
 }
 
 const AddNodeForm: React.FC<AddNodeFormProps> = ({
   newNode,
+  edgeType,
+  edgeWeight,
   onInputChange,
   onCheckboxChange,
   onCategoryChange,
+  onEdgeTypeChange,
+  onEdgeWeightChange,
   onAddClick
 }) => {
   // Для контактного узла кнопка активна когда заполнено Имя
@@ -112,6 +126,37 @@ const AddNodeForm: React.FC<AddNodeFormProps> = ({
               onChange={onInputChange}
               placeholder="Введите фамилию"
             />
+          </FormControl>
+
+          <Heading size="xs" mt={2} color="gray.500">Связь</Heading>
+
+          <FormControl>
+            <FormLabel>Тип связи</FormLabel>
+            <Select
+              value={edgeType}
+              onChange={(e) => onEdgeTypeChange(e.target.value)}
+              placeholder="Выберите тип"
+            >
+              {EDGE_TYPES.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Сила связи (1–5)</FormLabel>
+            <NumberInput
+              min={1}
+              max={5}
+              value={edgeWeight}
+              onChange={(_, v) => onEdgeWeightChange(isNaN(v) ? 1 : v)}
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
           </FormControl>
         </>
       )}

@@ -46,15 +46,23 @@ func (er *EdgeRepository) Add(graphId string, targetNodeId string, req *dto_requ
 
 	newEdgeID := "e" + uuid.New().String()[:4] // Пример: "n1a2b3c4"
 
-	// Создаем новый узел с сгенерированным ID
+	weight := req.Weight
+	if weight < 1 {
+		weight = 1
+	}
+	if weight > 5 {
+		weight = 5
+	}
+
 	newEdge := bson.M{
 		"edgeId": newEdgeID,
-		"label":  req.Label,    // предполагается, что label приходит в запросе
-		"source": req.Source,   // Откуда
-		"target": targetNodeId, // Куда
-		"size":   req.Size,     // размер узла
-		"color":  req.Color,    // цвет
-
+		"label":  req.Label,
+		"source": req.Source,
+		"target": targetNodeId,
+		"size":   float64(weight),
+		"color":  req.Color,
+		"type":   req.Type,
+		"weight": weight,
 	}
 
 	// Создаем обновление - добавляем новый узел в массив nodes
@@ -93,16 +101,14 @@ func (er *EdgeRepository) Update(graphId string, req *dto_request.ChangeEdgeRequ
 		return nil, err
 	}
 
-	// Создаем фильтр для поиска документа и конкретного узла
 	filter := bson.M{
-		"_id":      objID,
-		"nodes.id": req.Id,
+		"_id":           objID,
+		"edges.edgeId":  req.Id,
 	}
 
-	// Создаем обновление для замены узла
 	update := bson.M{
 		"$set": bson.M{
-			"nodes.$": req, // Позиционный оператор $ заменяет найденный элемент
+			"edges.$": req,
 		},
 	}
 

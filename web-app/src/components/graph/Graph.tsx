@@ -156,8 +156,8 @@ const GraphComponent: React.FC<GraphComponentProps> = ({ onNodeClick, onAddNode 
         settings={{
           renderEdgeLabels: true,
           edgeLabelSize: 'proportional',
-          minEdgeSize: 0.5,
-          maxEdgeSize: 3
+          minEdgeSize: 1,
+          maxEdgeSize: 8
         }}
         style={{ width: '100%', height: '100%' }}
         onLoad={handleSigmaLoad}
