@@ -9,6 +9,7 @@ import {
   Heading
 } from '@chakra-ui/react';
 import { Node } from "../../../types/node";
+import { CATEGORIES } from '../addNodeForm/AddNodeForm';
 
 interface EditNodeFormProps {
   editNode: Node;
@@ -35,6 +36,24 @@ const EditNodeForm: React.FC<EditNodeFormProps> = ({ editNode, onChange, onSave,
       </FormControl>
 
       <Heading size="md" mt={6}>Редактирование контакта</Heading>
+
+      {!editNode.isGroup && (
+        <FormControl>
+          <FormLabel>Категория</FormLabel>
+          <Select
+            name="category"
+            value={editNode.category || ''}
+            onChange={onChange}
+            placeholder="Выберите категорию"
+          >
+            {CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+      )}
 
       <FormControl>
         <FormLabel>Имя</FormLabel>

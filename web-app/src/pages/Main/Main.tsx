@@ -45,6 +45,7 @@ const Main: FC = () => {
       parentId: editNode.parentId,
       contact: editNode.contact,
       isGroup: editNode.isGroup,
+      category: editNode.category,
       children: []
     }
 

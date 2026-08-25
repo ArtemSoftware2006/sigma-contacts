@@ -62,6 +62,7 @@ const SigmaContainer: React.FC<SigmaContainerProps> = ({
         type: nodeAttrs.type,
         contact: vitrualGraph?.nodes.find(node => node.id == nodeId)?.contact || newEmptyContact(),
         isGroup: isGroupNodeChange || false,
+        category: vitrualGraph?.nodes.find(node => node.id == nodeId)?.category || '',
         children: nodeAttrs.children || [],
         parentId: nodeAttrs.parentId || ''
       };

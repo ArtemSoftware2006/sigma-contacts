@@ -25,6 +25,7 @@ type ChangeNodeRequest struct {
 	Color    string           `bson:"color" json:"color"`
 	Type     string           `bson:"type" json:"type"`
 	IsGroup  bool             `bson:"isGroup" json:"isGroup"`
+	Category string           `bson:"category" json:"category"`
 	Children []string         `bson:"children,omitempty" json:"children,omitempty"`
 	Contact  entities.Contact `bson:"contact" json:"contact"`
 	ParentID *string          `bson:"parentId,omitempty" json:"parentId,omitempty"`

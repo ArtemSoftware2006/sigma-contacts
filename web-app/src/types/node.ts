@@ -36,6 +36,7 @@ export interface NodeChange {
   color: string;
   type: string;
   isGroup: boolean,
+  category: string,
   contact: Contact,
   children: string[],
   parentId: string

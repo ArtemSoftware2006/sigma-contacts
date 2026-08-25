@@ -18,6 +18,7 @@ export const CATEGORY_COLORS: Record<string, string> = {
   'Соседи':       '#F39C12',
   'Университет':  '#9B59B6',
   'Знакомые':     '#1ABC9C',
+  'Искусство':    '#E91E63',
 };
 
 export const CATEGORIES = Object.keys(CATEGORY_COLORS);
