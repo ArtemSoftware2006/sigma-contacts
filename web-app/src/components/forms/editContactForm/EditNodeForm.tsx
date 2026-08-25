@@ -17,6 +17,7 @@ import {
 import { Node } from "../../../types/node";
 import { CATEGORIES } from '../addNodeForm/AddNodeForm';
 import { EDGE_TYPES } from '../../../types/edge';
+import TagInput from '../tagInput/TagInput';
 
 interface EditNodeFormProps {
   editNode: Node;
@@ -25,6 +26,7 @@ interface EditNodeFormProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onEdgeTypeChange: (v: string) => void;
   onEdgeWeightChange: (v: number) => void;
+  onTagsChange: (tags: string[]) => void;
   onSave: () => void;
   onCancel: () => void;
 }
@@ -36,6 +38,7 @@ const EditNodeForm: React.FC<EditNodeFormProps> = ({
   onChange,
   onEdgeTypeChange,
   onEdgeWeightChange,
+  onTagsChange,
   onSave,
   onCancel,
 }) => {
@@ -135,6 +138,16 @@ const EditNodeForm: React.FC<EditNodeFormProps> = ({
               placeholder="Введите комментарий"
             />
           </FormControl>
+
+          {!editNode.isGroup && (
+            <FormControl>
+              <FormLabel>Теги</FormLabel>
+              <TagInput
+                tags={editNode.contact?.tags || []}
+                onChange={onTagsChange}
+              />
+            </FormControl>
+          )}
 
           {!editNode.isGroup && (
             <>

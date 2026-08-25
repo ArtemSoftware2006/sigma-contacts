@@ -16,6 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { Node } from '../../../types/node';
 import { EDGE_TYPES } from '../../../types/edge';
+import TagInput from '../tagInput/TagInput';
 
 export const CATEGORY_COLORS: Record<string, string> = {
   'Коллеги':      '#4A90D9',
@@ -38,6 +39,7 @@ interface AddNodeFormProps {
   onCategoryChange: (category: string) => void;
   onEdgeTypeChange: (v: string) => void;
   onEdgeWeightChange: (v: number) => void;
+  onTagsChange: (tags: string[]) => void;
   onAddClick: () => void;
 }
 
@@ -50,6 +52,7 @@ const AddNodeForm: React.FC<AddNodeFormProps> = ({
   onCategoryChange,
   onEdgeTypeChange,
   onEdgeWeightChange,
+  onTagsChange,
   onAddClick
 }) => {
   // Для контактного узла кнопка активна когда заполнено Имя
@@ -125,6 +128,14 @@ const AddNodeForm: React.FC<AddNodeFormProps> = ({
               value={newNode.contact.surname}
               onChange={onInputChange}
               placeholder="Введите фамилию"
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Теги</FormLabel>
+            <TagInput
+              tags={newNode.contact.tags || []}
+              onChange={onTagsChange}
             />
           </FormControl>
 

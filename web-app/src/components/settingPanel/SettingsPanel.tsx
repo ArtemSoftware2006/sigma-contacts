@@ -88,6 +88,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     const { name, value } = e.target;
     if (name.startsWith('contact.')) {
       const field = name.split('.')[1] as keyof Contact;
+      if (field === 'tags') return; // handled by onTagsChange
       setNewNode(prev => ({
         ...prev,
         contact: { ...prev.contact, [field]: value }
@@ -112,8 +113,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
       produce((draft: Node) => {
         if (name.startsWith('contact.')) {
           const field = name.split('.')[1] as keyof Contact;
+          if (field === 'tags') return; // handled by onTagsChange
           draft.contact = draft.contact || {} as Contact;
-          draft.contact[field] = value;
+          (draft.contact as any)[field] = value;
         } else {
           const key = name as keyof Node;
           draft[key] = (key === 'size' ? Number(value) : value) as never;
@@ -173,6 +175,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           onCategoryChange={handleCategoryChange}
           onEdgeTypeChange={setEdgeType}
           onEdgeWeightChange={setEdgeWeight}
+          onTagsChange={(tags) => setNewNode(prev => ({ ...prev, contact: { ...prev.contact, tags } }))}
           onAddClick={handleAddClick}
         />
       )}
@@ -198,6 +201,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             onChange={handleInputChangeEditForm}
             onEdgeTypeChange={setEditEdgeType}
             onEdgeWeightChange={setEditEdgeWeight}
+            onTagsChange={(tags) => setEditNode(produce((draft: Node) => { draft.contact = draft.contact || {} as Contact; draft.contact.tags = tags; }))}
             onSave={handleEditClick}
             onCancel={() => {
               if (onStateChange) {

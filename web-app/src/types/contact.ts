@@ -8,6 +8,7 @@ export interface Contact {
 	whatsAppPhone: string
 	github: string
 	comment: string
+	tags: string[]
 }
 
 export const newEmptyContact = () : Contact => {
@@ -21,6 +22,7 @@ export const newEmptyContact = () : Contact => {
 		whatsAppPhone: "",
 		github: "",
 		comment: "",
+		tags: [],
 	}
 
 	return emptyContact
@@ -37,6 +39,7 @@ export const newEmptyContactForGraph = () : Contact => {
 		whatsAppPhone: "",
 		github: "",
 		comment: "",
+		tags: [],
 	}
 
 	return emptyContact

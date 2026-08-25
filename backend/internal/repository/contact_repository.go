@@ -49,6 +49,11 @@ func (cr *ContactRepository) Add(graphId string, nodeId string, contact *dto_req
 	}
 
 	newContactId := "c" + uuid.New().String()[:4]
+	tags := contact.Tags
+	if tags == nil {
+		tags = []string{}
+	}
+
 	newContact := bson.M{
 		"contactId":     newContactId,
 		"surname":       contact.Surname,
@@ -59,6 +64,7 @@ func (cr *ContactRepository) Add(graphId string, nodeId string, contact *dto_req
 		"whatsAppPhone": contact.WhatsAppPhone,
 		"github":        contact.Github,
 		"comment":       contact.Comment,
+		"tags":          tags,
 	}
 
 	// Создаем операцию обновления для добавления нового контакта

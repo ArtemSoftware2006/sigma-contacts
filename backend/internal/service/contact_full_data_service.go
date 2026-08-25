@@ -49,6 +49,7 @@ func (cs *ContactFullDataService) Add(req *dto_request.AddContactFullDataRequest
 		WhatsAppPhone: req.Node.Contact.WhatsAppPhone,
 		Github:        req.Node.Contact.Github,
 		Comment:       req.Node.Contact.Comment,
+		Tags:          req.Node.Contact.Tags,
 	})
 	if err != nil {
 		log.Error("ContactService: error adding contact", err)

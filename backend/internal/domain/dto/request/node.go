@@ -49,15 +49,16 @@ type AddContactNodeRequest struct {
 }
 
 type ContactPayload struct {
-	ContactId     string `json:"contactId"`
-	Surname       string `json:"surname"`
-	Name          string `json:"name"`
-	Phone         string `json:"phone"`
-	VkId          string `json:"vkId"`
-	TelegramId    string `json:"telegramId"`
-	WhatsAppPhone string `json:"whatsAppPhone"`
-	Github        string `json:"github"`
-	Comment       string `json:"comment"`
+	ContactId     string   `json:"contactId"`
+	Surname       string   `json:"surname"`
+	Name          string   `json:"name"`
+	Phone         string   `json:"phone"`
+	VkId          string   `json:"vkId"`
+	TelegramId    string   `json:"telegramId"`
+	WhatsAppPhone string   `json:"whatsAppPhone"`
+	Github        string   `json:"github"`
+	Comment       string   `json:"comment"`
+	Tags          []string `json:"tags"`
 }
 
 func MapDtoToEntityContact(contactDto *ContactPayload) *entities.Contact {
@@ -75,5 +76,6 @@ func MapDtoToEntityContact(contactDto *ContactPayload) *entities.Contact {
 		WhatsAppPhone: contactDto.WhatsAppPhone,
 		Github:        contactDto.Github,
 		Comment:       contactDto.Comment,
+		Tags:          contactDto.Tags,
 	}
 }
